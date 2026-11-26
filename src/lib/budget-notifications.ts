@@ -21,6 +21,7 @@ import {
   type EmailContent,
   type SendEmail,
 } from "./email";
+import { PRODUCT_NAME } from "@/lib/product";
 
 export type ThresholdPercent =
   | typeof BUDGET_THRESHOLDS.warningPercent
@@ -281,7 +282,7 @@ export function slackPayload(alert: BudgetAlert) {
 export function emailMessage(subject: string, sentence: string): EmailContent {
   return {
     subject: subject.replace(/\s+/g, " ").trim(),
-    text: `${sentence}\n\nSent by AI API Cost Tracker.\n`,
+    text: `${sentence}\n\nSent by ${PRODUCT_NAME}.\n`,
   };
 }
 

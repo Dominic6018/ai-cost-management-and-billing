@@ -1,4 +1,4 @@
-# AI API Cost Tracker
+# AI SaaS Cost Management & Usage-Based Billing Platform
 
 A lightweight, self-hosted ledger of what your AI API calls cost. Your app sends the token counts from each request; the tracker prices them exactly against dated, tier-aware model prices and shows spend by project, provider and model, with monthly budgets and alerts. **Prompts and responses are never sent or stored**, only token counts.
 
@@ -37,8 +37,8 @@ It complements LLM gateways (which route requests and cap spend) and tracing too
 About five minutes with Docker installed:
 
 ```bash
-git clone https://github.com/Dominic6018/ai-api-cost-tracker.git
-cd ai-api-cost-tracker
+git clone https://github.com/Dominic6018/ai-cost-management-and-billing.git
+cd ai-cost-management-and-billing
 docker compose up -d --build                          # Postgres, migrations and the app
 
 docker compose run --rm migrate npm run db:seed       # model prices and a sample project

@@ -5,7 +5,7 @@ import { addPriceAction } from "../actions";
 import { PriceForm } from "../price-form";
 
 export const metadata: Metadata = {
-  title: "Add a price · AI API Cost Tracker",
+  title: "Add a price",
 };
 
 export const dynamic = "force-dynamic";

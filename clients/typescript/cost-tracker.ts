@@ -1,5 +1,5 @@
 /**
- * AI API Cost Tracker client: reports token usage to `POST /api/usage`.
+ * AI SaaS Cost Management & Usage-Based Billing Platform client: reports token usage to `POST /api/usage`.
  *
  * Dependency-free. Copy this file into your project, or import it directly
  * from Node 22.18+ (which runs TypeScript) or any bundler. Only the token

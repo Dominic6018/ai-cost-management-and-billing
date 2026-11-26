@@ -12,7 +12,7 @@ import { can } from "@/lib/roles";
 import { BudgetAlerts } from "../budget-alerts";
 import { BudgetStatusBadge } from "../budget-status";
 
-export const metadata: Metadata = { title: "Projects · AI API Cost Tracker" };
+export const metadata: Metadata = { title: "Projects" };
 
 // Reads the database on every request; never prerender at build time.
 export const dynamic = "force-dynamic";

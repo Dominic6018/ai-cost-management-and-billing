@@ -117,7 +117,7 @@ export async function fetchOpenAICosts({
     const response = await fetchImpl(url, {
       headers: {
         authorization: `Bearer ${adminKey}`,
-        "user-agent": "ai-api-cost-tracker (reconcile)",
+        "user-agent": "ai-cost-management-and-billing (reconcile)",
       },
     });
     const body: unknown = await response.json().catch(() => null);

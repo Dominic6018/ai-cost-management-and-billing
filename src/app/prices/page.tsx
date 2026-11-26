@@ -15,7 +15,7 @@ import {
   type PriceStatus,
 } from "@/lib/prices";
 
-export const metadata: Metadata = { title: "Prices · AI API Cost Tracker" };
+export const metadata: Metadata = { title: "Prices" };
 
 // Reads the database on every request; never prerender at build time.
 export const dynamic = "force-dynamic";

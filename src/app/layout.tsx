@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PRODUCT_NAME } from "@/lib/product";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI API Cost Tracker",
+  title: { default: PRODUCT_NAME, template: `%s · ${PRODUCT_NAME}` },
   description:
     "Track token usage and spend across AI API providers, models, and projects.",
 };

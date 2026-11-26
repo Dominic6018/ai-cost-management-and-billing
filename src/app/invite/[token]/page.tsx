@@ -6,9 +6,10 @@ import { INVALID_INVITATION_MESSAGE } from "@/lib/invitations";
 import { MIN_PASSWORD_LENGTH } from "@/lib/passwords";
 import { acceptInvitationAction } from "./actions";
 import { AcceptForm } from "./accept-form";
+import { PRODUCT_NAME } from "@/lib/product";
 
 export const metadata: Metadata = {
-  title: "Accept invitation · AI API Cost Tracker",
+  title: "Accept invitation",
   // The link is the credential: keep it out of Referer headers and search.
   referrer: "no-referrer",
   robots: { index: false, follow: false },
@@ -28,7 +29,7 @@ export default async function InvitePage({
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-4 py-12">
       <div className="flex flex-col gap-1">
-        <p className="text-sm text-foreground/60">AI API Cost Tracker</p>
+        <p className="text-sm text-foreground/60">{PRODUCT_NAME}</p>
         <h1 className="text-3xl font-semibold tracking-tight">
           {usable ? `Join ${usable.organizationName}` : "Invitation"}
         </h1>

@@ -17,7 +17,7 @@ import {
 } from "./actions";
 import { InviteForm } from "./invite-form";
 
-export const metadata: Metadata = { title: "Accounts · AI API Cost Tracker" };
+export const metadata: Metadata = { title: "Accounts" };
 
 // Reads the database on every request; never prerender at build time.
 export const dynamic = "force-dynamic";

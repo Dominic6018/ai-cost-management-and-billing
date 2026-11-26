@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "No access · AI API Cost Tracker",
+  title: "No access",
 };
 
 export const dynamic = "force-dynamic";

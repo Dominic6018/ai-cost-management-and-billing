@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PRODUCT_NAME } from "@/lib/product";
 
 const plannedFeatures = [
   {
@@ -27,7 +28,7 @@ export default function Home() {
           v0.1 · early development
         </p>
         <h1 className="text-4xl font-semibold tracking-tight">
-          AI API Cost Tracker
+          {PRODUCT_NAME}
         </h1>
         <p className="max-w-2xl text-lg text-foreground/70">
           Track token usage and spend across AI API providers, models, and

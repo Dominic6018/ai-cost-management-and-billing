@@ -1,6 +1,6 @@
 # TypeScript client
 
-Reports token usage from OpenAI, Anthropic and Gemini responses to your AI API Cost Tracker, without hand-written API calls. It's a single dependency-free file, [cost-tracker.ts](cost-tracker.ts), that works in Node 18+ and edge runtimes with `fetch`. Only token counts are sent, never prompts or responses. Use it server-side: the API key must stay secret.
+Reports token usage from OpenAI, Anthropic and Gemini responses to your AI SaaS Cost Management & Usage-Based Billing Platform, without hand-written API calls. It's a single dependency-free file, [cost-tracker.ts](cost-tracker.ts), that works in Node 18+ and edge runtimes with `fetch`. Only token counts are sent, never prompts or responses. Use it server-side: the API key must stay secret.
 
 ## Install
 

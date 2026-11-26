@@ -20,7 +20,7 @@ import { BudgetMeter } from "./budget-meter";
 import { UnpricedNotice } from "./unpriced-notice";
 
 export const metadata: Metadata = {
-  title: "Spend overview · AI API Cost Tracker",
+  title: "Spend overview",
 };
 
 export const dynamic = "force-dynamic";

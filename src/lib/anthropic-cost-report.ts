@@ -47,7 +47,7 @@ export async function fetchAnthropicCostReport({
       headers: {
         "x-api-key": adminKey,
         "anthropic-version": ANTHROPIC_VERSION,
-        "user-agent": "ai-api-cost-tracker (reconcile)",
+        "user-agent": "ai-cost-management-and-billing (reconcile)",
       },
     });
     const body: unknown = await response.json().catch(() => null);

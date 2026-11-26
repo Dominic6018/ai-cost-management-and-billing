@@ -21,7 +21,7 @@ import {
 } from "@/lib/usage-filters";
 
 export const metadata: Metadata = {
-  title: "Usage events · AI API Cost Tracker",
+  title: "Usage events",
 };
 
 export const dynamic = "force-dynamic";
