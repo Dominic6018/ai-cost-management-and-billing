@@ -9,7 +9,7 @@ import { endPriceAction } from "../../actions";
 import { EndPriceForm } from "../../end-price-form";
 
 export const metadata: Metadata = {
-  title: "End a price · AI API Cost Tracker",
+  title: "End a price",
 };
 
 export const dynamic = "force-dynamic";

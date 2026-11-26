@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SessionUser } from "@/db/auth";
 import { navigationFor } from "@/lib/navigation";
 import { logoutAction } from "./login/actions";
+import { PRODUCT_NAME } from "@/lib/product";
 
 /**
  * The navigation bar on every dashboard page: the sections, the current
@@ -28,7 +29,7 @@ export function DashboardNav({
           className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm"
         >
           <Link href="/" className="font-semibold">
-            AI API Cost Tracker
+            {PRODUCT_NAME}
           </Link>
           {sections.map((section) => (
             <Link

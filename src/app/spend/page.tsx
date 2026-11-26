@@ -20,7 +20,7 @@ import {
 import { DailySpendChart } from "./daily-spend-chart";
 
 export const metadata: Metadata = {
-  title: "Spend over time · AI API Cost Tracker",
+  title: "Spend over time",
 };
 
 export const dynamic = "force-dynamic";

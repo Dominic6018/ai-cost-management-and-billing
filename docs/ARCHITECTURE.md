@@ -11,7 +11,7 @@ flowchart LR
     tools["Reporting tools"]
     cron["Scheduler (cron)"]
   end
-  subgraph tracker["AI API Cost Tracker (Next.js)"]
+  subgraph tracker["AI SaaS Cost Management & Usage-Based Billing Platform (Next.js)"]
     api["HTTP API<br/>/api/usage, /api/outcomes,<br/>/api/budget/*, /api/otel/v1/traces"]
     reports["Reporting API<br/>/api/reports/*"]
     dash["Dashboard<br/>server components + server actions"]

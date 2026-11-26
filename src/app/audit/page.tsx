@@ -12,7 +12,7 @@ import {
 import { requirePermission } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Audit log · AI API Cost Tracker",
+  title: "Audit log",
 };
 
 export const dynamic = "force-dynamic";

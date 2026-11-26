@@ -1,4 +1,4 @@
-"""AI API Cost Tracker client: reports token usage to ``POST /api/usage``.
+"""AI SaaS Cost Management & Usage-Based Billing Platform client: reports token usage to ``POST /api/usage``.
 
 Dependency-free (standard library only, Python 3.10+). Copy this file into
 your project. Only token counts are sent, never prompts or responses.

@@ -12,7 +12,7 @@ import { createApiKeyAction, revokeApiKeyAction } from "./actions";
 import { ApiKeyForm } from "./api-key-form";
 
 export const metadata: Metadata = {
-  title: "API keys · AI API Cost Tracker",
+  title: "API keys",
 };
 
 // Reads the database on every request; never prerender at build time.

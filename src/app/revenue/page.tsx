@@ -15,7 +15,7 @@ import { formatUsd } from "@/lib/cost";
 import { formatShare, revenueReport } from "@/lib/revenue";
 
 export const metadata: Metadata = {
-  title: "Revenue and AI API cost · AI API Cost Tracker",
+  title: "Revenue and AI API cost",
 };
 
 export const dynamic = "force-dynamic";
@@ -67,7 +67,7 @@ export default async function RevenuePage({
       <p className="max-w-3xl text-sm text-foreground/70">
         What each customer was billed in the month, from the{" "}
         <a
-          href="https://github.com/Dominic6018/ai-api-cost-tracker/blob/main/docs/BILLING.md"
+          href="https://github.com/Dominic6018/ai-cost-management-and-billing/blob/main/docs/BILLING.md"
           className="underline"
         >
           billing ledger

@@ -8,7 +8,7 @@ import { updateProjectAction } from "../../actions";
 import { ProjectForm } from "../../project-form";
 
 export const metadata: Metadata = {
-  title: "Edit project · AI API Cost Tracker",
+  title: "Edit project",
 };
 
 export const dynamic = "force-dynamic";

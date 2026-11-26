@@ -19,7 +19,7 @@ import {
 } from "@/lib/spend-change";
 
 export const metadata: Metadata = {
-  title: "Why spend changed · AI API Cost Tracker",
+  title: "Why spend changed",
 };
 
 export const dynamic = "force-dynamic";

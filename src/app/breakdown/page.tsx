@@ -22,7 +22,7 @@ import { dailyRange, parseSpendRange, SPEND_RANGES } from "@/lib/spend-series";
 import { usageQuery } from "@/lib/usage-filters";
 
 export const metadata: Metadata = {
-  title: "Cost breakdown · AI API Cost Tracker",
+  title: "Cost breakdown",
 };
 
 export const dynamic = "force-dynamic";

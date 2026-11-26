@@ -9,7 +9,7 @@ import { createPortalLinkAction, revokePortalLinkAction } from "./actions";
 import { PortalLinkForm } from "./portal-link-form";
 
 export const metadata: Metadata = {
-  title: "Portal links · AI API Cost Tracker",
+  title: "Portal links",
 };
 
 // Reads the database on every request; never prerender at build time.

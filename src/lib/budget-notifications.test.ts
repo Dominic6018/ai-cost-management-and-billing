@@ -321,7 +321,7 @@ describe("email", () => {
   it("words the message for each status, without Slack markup", () => {
     expect(budgetEmail(alert())).toEqual({
       subject: "Support Bot: 81.2% of budget used for 2026-11",
-      text: "Support Bot has used 81.2% of its $100.00 monthly budget for 2026-11: $81.23 spent.\n\nSent by AI API Cost Tracker.\n",
+      text: "Support Bot has used 81.2% of its $100.00 monthly budget for 2026-11: $81.23 spent.\n\nSent by AI SaaS Cost Management & Usage-Based Billing Platform.\n",
     });
     expect(
       budgetEmail({

@@ -11,7 +11,7 @@ import { estimateSavings } from "@/lib/savings";
 import { comparisonPeriods } from "@/lib/spend-change";
 
 export const metadata: Metadata = {
-  title: "Savings estimates · AI API Cost Tracker",
+  title: "Savings estimates",
 };
 
 export const dynamic = "force-dynamic";

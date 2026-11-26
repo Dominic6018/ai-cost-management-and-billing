@@ -4,8 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { parseOidcConfig, ssoErrorMessage } from "@/lib/oidc";
 import { safeRedirectPath } from "@/lib/sessions";
 import { LoginForm } from "./login-form";
+import { PRODUCT_NAME } from "@/lib/product";
 
-export const metadata: Metadata = { title: "Sign in · AI API Cost Tracker" };
+export const metadata: Metadata = { title: "Sign in" };
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function LoginPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-8 px-4 py-12">
       <div className="flex flex-col gap-1">
-        <p className="text-sm text-foreground/60">AI API Cost Tracker</p>
+        <p className="text-sm text-foreground/60">{PRODUCT_NAME}</p>
         <h1 className="text-3xl font-semibold tracking-tight">Sign in</h1>
       </div>
       {error && (

@@ -6,7 +6,7 @@ import { organizationScope } from "@/db/scope";
 import { requireUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Ingestion · AI API Cost Tracker",
+  title: "Ingestion",
 };
 
 export const dynamic = "force-dynamic";
