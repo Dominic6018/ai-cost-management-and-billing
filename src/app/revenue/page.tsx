@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DashboardNav } from "../dashboard-nav";
+import { DashboardShell } from "../dashboard-shell";
 import { db } from "@/db";
 import { getRevenueInputs } from "@/db/revenue";
 import { requireUser } from "@/lib/auth";
@@ -58,8 +58,7 @@ export default async function RevenuePage({
   const inProgress = month >= current;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/revenue" />
+    <DashboardShell user={user} current="/revenue">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-semibold tracking-tight">
           Revenue and AI API cost
@@ -210,6 +209,6 @@ export default async function RevenuePage({
           </table>
         </div>
       )}
-    </main>
+    </DashboardShell>
   );
 }

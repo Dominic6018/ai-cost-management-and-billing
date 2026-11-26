@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { DashboardNav } from "../dashboard-nav";
+import Link from "next/link";
+import { DashboardShell } from "../dashboard-shell";
 import { db } from "@/db";
 import { getSpendOverview } from "@/db/spend";
 import { getUnpricedSummary } from "@/db/unpriced";
@@ -70,8 +71,7 @@ export default async function OverviewPage() {
   const hasUsage = totals.events > 0;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/overview" />
+    <DashboardShell user={user} current="/overview">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -145,9 +145,12 @@ export default async function OverviewPage() {
         <section className="rounded-lg border border-dashed border-foreground/20 p-8 text-center text-foreground/70">
           <p className="font-medium text-foreground">No usage recorded yet</p>
           <p className="mt-1 text-sm">
-            Create an API key with <code>npm run api-key -- create</code> and
-            send usage to <code>POST /api/usage</code>. Spend appears here as it
-            arrives.
+            Create an API key from a project&apos;s{" "}
+            <Link href="/projects" className="underline">
+              Keys
+            </Link>{" "}
+            page, or with <code>npm run api-key -- create</code>, and send usage
+            to <code>POST /api/usage</code>. Spend appears here as it arrives.
           </p>
         </section>
       )}
@@ -284,6 +287,6 @@ export default async function OverviewPage() {
         {`$${SPIKE_RULES.minimumUsd}`} and at least {SPIKE_RULES.multiplier}×
         that average.
       </p>
-    </main>
+    </DashboardShell>
   );
 }
