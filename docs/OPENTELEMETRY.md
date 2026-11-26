@@ -1,6 +1,6 @@
 # OpenTelemetry intake
 
-If your app is already instrumented with OpenTelemetry, the tracker can read token usage straight from your traces. Spans that follow the [GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) become usage events, priced and de-duplicated like `POST /api/usage`. All other spans are ignored, and no prompt or response content is stored.
+If your app is already instrumented with OpenTelemetry, MeterVanta can read token usage straight from your traces. Spans that follow the [GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) become usage events, priced and de-duplicated like `POST /api/usage`. All other spans are ignored, and no prompt or response content is stored.
 
 ## Endpoint
 

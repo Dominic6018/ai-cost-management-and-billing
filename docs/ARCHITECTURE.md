@@ -1,6 +1,6 @@
 # Architecture
 
-How the tracker fits together, and why it's built this way. It's one Next.js application backed by one Postgres database, plus command-line tools and client libraries that use the same code. For each file's job see [Project structure](../README.md#project-structure), and for the tables see [Data model](../README.md#data-model).
+How MeterVanta fits together, and why it's built this way. It's one Next.js application backed by one Postgres database, plus command-line tools and client libraries that use the same code. For each file's job see [Project structure](../README.md#project-structure), and for the tables see [Data model](../README.md#data-model).
 
 ```mermaid
 flowchart LR
@@ -11,7 +11,7 @@ flowchart LR
     tools["Reporting tools"]
     cron["Scheduler (cron)"]
   end
-  subgraph tracker["AI SaaS Cost Management & Usage-Based Billing Platform (Next.js)"]
+  subgraph tracker["MeterVanta (Next.js)"]
     api["HTTP API<br/>/api/usage, /api/outcomes,<br/>/api/budget/*, /api/otel/v1/traces"]
     reports["Reporting API<br/>/api/reports/*"]
     dash["Dashboard<br/>server components + server actions"]

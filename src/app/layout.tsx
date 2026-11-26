@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { PRODUCT_NAME } from "@/lib/product";
+import {
+  PRODUCT_DESCRIPTION,
+  PRODUCT_NAME,
+  PRODUCT_TITLE,
+} from "@/lib/product";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +18,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: PRODUCT_NAME, template: `%s · ${PRODUCT_NAME}` },
-  description:
-    "Track token usage and spend across AI API providers, models, and projects.",
+  // Pages set their own title ("Prices"); the brand follows it in the tab.
+  title: { default: PRODUCT_TITLE, template: `%s · ${PRODUCT_NAME}` },
+  description: PRODUCT_DESCRIPTION,
+  applicationName: PRODUCT_NAME,
+  // Link previews. No URL or image is set: the app's address is the
+  // deployment's own, and there's no brand artwork yet.
+  openGraph: {
+    type: "website",
+    siteName: PRODUCT_NAME,
+    title: PRODUCT_TITLE,
+    description: PRODUCT_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: PRODUCT_TITLE,
+    description: PRODUCT_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

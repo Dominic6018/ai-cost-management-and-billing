@@ -1,6 +1,6 @@
 # Integration guide
 
-How to wire the tracker into a real application, and how to know the wiring is complete. The [quickstart](QUICKSTART.md) gets one request recorded; this guide covers the decisions after that. Each section links to the detailed reference instead of repeating it.
+How to wire MeterVanta into a real application, and how to know the wiring is complete. The [quickstart](QUICKSTART.md) gets one request recorded; this guide covers the decisions after that. Each section links to the detailed reference instead of repeating it.
 
 ## 1. Choose how to send usage
 

@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   title: { absolute: "Your statement" },
   // Not the app's own description, which is about tracking AI API cost.
   description: "A read-only billing statement.",
+  // Link previews say the same, rather than inheriting the product's.
+  applicationName: null,
+  openGraph: {
+    title: "Your statement",
+    description: "A read-only billing statement.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Your statement",
+    description: "A read-only billing statement.",
+  },
   // The link is the credential: keep it out of Referer headers and search.
   referrer: "no-referrer",
   robots: { index: false, follow: false },

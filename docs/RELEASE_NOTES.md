@@ -4,7 +4,7 @@
 
 > **Not tagged yet.** These notes describe the code on `main`, at version 0.1.0 in `package.json`. No Git tag or GitHub release has been made; the maintainer creates them when 0.1.0 is cut.
 
-A self-hosted ledger of what your AI API calls cost, by project, customer, feature and agent run, with no prompt data stored. It records token counts from OpenAI, Anthropic and Gemini, prices them exactly with dated, sourced prices, and checks the result against the providers' bills. On top of that sit budgets that can stop an agent before it overspends, and an optional ledger for billing your own customers for their AI usage.
+MeterVanta is a self-hosted ledger of what your AI API calls cost, by project, customer, feature and agent run, with no prompt data stored. It records token counts from OpenAI, Anthropic and Gemini, prices them exactly with dated, sourced prices, and checks the result against the providers' bills. On top of that sit budgets that can stop an agent before it overspends, and an optional ledger for billing your own customers for their AI usage.
 
 The milestones below are in [docs/ROADMAP.md](ROADMAP.md), with an issue or PR for each item.
 

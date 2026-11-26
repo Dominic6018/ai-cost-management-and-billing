@@ -1,8 +1,14 @@
-# AI SaaS Cost Management & Usage-Based Billing Platform
+# MeterVanta
 
-A lightweight, self-hosted ledger of what your AI API calls cost. Your app sends the token counts from each request; the tracker prices them exactly against dated, tier-aware model prices and shows spend by project, provider and model, with monthly budgets and alerts. **Prompts and responses are never sent or stored**, only token counts.
+**AI Cost Intelligence & Usage-Based Billing Platform** · AI FinOps & Billing Infrastructure
 
-It complements LLM gateways (which route requests and cap spend) and tracing tools (which follow a request through an agent) rather than replacing them: it's the system of record for cost. It breaks cost down by customer, feature and agent run.
+> **Control AI costs. Monetize usage. Protect your margins.**
+
+MeterVanta is an open-source AI financial infrastructure platform for AI-powered businesses. It tracks what every AI API call costs, keeps spending within budget, bills your customers for their AI usage, and shows each customer's revenue next to the AI API cost of serving them. Your app sends the token counts from each request; **prompts and responses are never sent or stored**.
+
+_Know what your AI costs. Know what your AI earns._
+
+MeterVanta complements LLM gateways (which route requests and cap spend) and tracing tools (which follow a request through an agent) rather than replacing them: it's the system of record for what your AI costs and what it earns.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/overview-dark.png">
@@ -22,15 +28,30 @@ It complements LLM gateways (which route requests and cap spend) and tracing too
 
 > **Status:** version 0.1.0, not tagged yet. Milestones 0–14 are complete: exact, tier-aware pricing, ingestion from the API, the TypeScript and Python clients and OpenTelemetry, reconciliation with provider bills, cost by customer, feature, agent run, tag and outcome, exports and a reporting API, budgets with alerts, checks and reservations, audited price management, teams with roles, organizations and single sign-on, a [billing ledger](docs/BILLING.md) with optional Stripe invoicing, and insights into why spend changed. Milestone 15's dashboard onboarding, customer portal, demos and documents are done, with screenshots of the newer pages still to come. See the [release notes](docs/RELEASE_NOTES.md), [docs/ROADMAP.md](docs/ROADMAP.md), and [docs/PRODUCT_UPGRADE_AUDIT.md](docs/PRODUCT_UPGRADE_AUDIT.md) for a verified list of what works and what doesn't.
 
-## Features
+## What MeterVanta does
 
-- **Exact costs.** Input, cached input, cache writes and output are priced separately, including prompt-length tiers such as Claude Haiku 5.5 above 100,000 tokens. Money is stored as exact decimals, never floating point.
-- **Dated prices.** A price change never rewrites history. Seed prices for Anthropic, OpenAI and Google models record their official source and the date they were checked.
-- **One small API.** `POST /api/usage` with a per-project API key, or the [TypeScript](clients/typescript/README.md) and [Python](clients/python/README.md) clients, which read usage from OpenAI, Anthropic and Gemini responses, or [OpenTelemetry traces](docs/OPENTELEMETRY.md) with GenAI token attributes. Retries with the same `requestId` are safe; request IDs are unique per project.
-- **Dashboard.** Spend today, this month and over 30 days; a daily chart over 7, 30 or 90 days with spend by provider and model; a filterable history of every request; light and dark mode.
-- **Budgets.** A monthly budget per project, with alerts at 80% and 100%, also sent to a webhook, Slack or email, and an optional per-run budget. Apps can ask before spending whether a run or the month has room left.
+- **AI cost intelligence: understand where every AI dollar goes.** Each request is priced exactly, at the rate in effect when it ran, with cached input, cache writes, batch, long-prompt tiers, audio, image and web search charged separately. Spend breaks down by project, provider, model, customer, user, feature, agent run and tag, with cost per outcome (such as per resolved ticket), an explanation of [why spend changed](#why-spend-changed), [savings estimates](#savings-estimates), and [reconciliation](#reconciling-with-provider-bills) against Anthropic, OpenAI and Google Cloud bills.
+- **Budget and spend control: prevent unexpected AI expenses.** Monthly and per-run budgets per project, with alerts at 80% and 100% by webhook, Slack or email, month-end forecasts and spike detection. Agents can [check or reserve budget](#budget-check-before-spending) before each step, so concurrent steps can't overspend together. Calls that don't ask first aren't blocked.
+- **Usage-based billing: turn AI consumption into customer revenue.** A [billing ledger](docs/BILLING.md) kept apart from provider cost: plans with a monthly fee, included usage and a markup on AI cost, monthly usage charges, prepaid credit, plan usage limits checked before spending, and draft invoices in Stripe that you review and send.
+- **Customer margins: know which customers earn more than they cost.** [`/revenue`](docs/BILLING.md#revenue-and-ai-api-cost) puts each customer's revenue next to the AI API cost of serving them, month by month. Customers read their own statement through a read-only [portal](docs/BILLING.md#customer-portal) that never shows your costs.
+- **Multi-provider visibility: all of your AI spend in one place.** OpenAI, Anthropic and Google Gemini through drop-in [TypeScript](clients/typescript/README.md) and [Python](clients/python/README.md) clients, including streamed responses, or through [OpenTelemetry](docs/OPENTELEMETRY.md). Mistral and other providers report through [`POST /api/usage`](#recording-usage).
+- **Self-hosted infrastructure: keep financial data under your control.** Docker Compose, or Vercel with your own Postgres. Organizations, admin, member and viewer roles, single sign-on and an audit log are built in.
+
+## Who it's for
+
+- AI-powered SaaS companies that need to know, and bill for, what each customer's AI usage costs
+- AI agent and automation agencies running work for many clients
+- AI application development companies
+- Enterprise AI engineering teams that own a shared AI budget
+- Businesses running multi-tenant AI applications
+
+## Built to be trusted
+
+- **Exact money.** Costs and charges are whole micro-dollars, never floating point, and a request's cost is rounded once. See [docs/COST-ACCOUNTING.md](docs/COST-ACCOUNTING.md).
+- **Dated, sourced prices.** A price change never rewrites history. Seed prices for Anthropic, OpenAI and Google models record their official source and the date they were checked.
+- **Nothing guessed.** Usage without a price is kept as unpriced, never estimated, and priced later.
 - **Secure by default.** API keys and sessions are stored only as hashes, passwords with scrypt, and sign-in and API keys are rate limited.
-- **Self-hosted.** Docker Compose or Vercel with hosted Postgres, under the MIT license.
+- **Open source.** MIT licensed.
 
 ## Quick start with Docker
 
