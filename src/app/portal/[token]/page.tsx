@@ -9,7 +9,9 @@ import {
 } from "@/lib/portal";
 
 export const metadata: Metadata = {
-  title: "Your statement",
+  // The customer's page, under your organization's name: without the
+  // layout's title template, which adds the product's name.
+  title: { absolute: "Your statement" },
   // Not the app's own description, which is about tracking AI API cost.
   description: "A read-only billing statement.",
   // The link is the credential: keep it out of Referer headers and search.
