@@ -1,6 +1,6 @@
 # Billing ledger
 
-The tracker records two kinds of money, and keeps them apart:
+MeterVanta records two kinds of money, and keeps them apart:
 
 - **Provider cost**: what OpenAI, Anthropic, Google and others charge you, computed from usage at their prices. It's in `usage_events`, and everything else in the README is about it.
 - **Billing**: what you bill your customers. It's in the billing ledger, described here.

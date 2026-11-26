@@ -1,6 +1,6 @@
 # Development Roadmap
 
-**Positioning:** a lightweight, self-hosted AI cost ledger. It tells you exactly what each customer, feature and agent run costs, with no prompt data stored. It complements gateways (which route requests and cap spend) and tracing tools (which attach cost to runs) rather than replacing them.
+**Positioning:** MeterVanta, a self-hosted AI cost and billing ledger. It tells you exactly what each customer, feature and agent run costs, with no prompt data stored. It complements gateways (which route requests and cap spend) and tracing tools (which attach cost to runs) rather than replacing them.
 
 Milestones are delivered in order, and items within a milestone can be worked in parallel. Items link to GitHub Issues; issues for later milestones are opened when the milestone starts. Milestones 5–10 come from a review of the AI cost-tooling market in October 2026, and Milestones 11–15 from the product upgrade audit of November 2026 (see [Why these milestones](#why-these-milestones)).
 

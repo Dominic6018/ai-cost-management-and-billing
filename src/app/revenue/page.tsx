@@ -12,6 +12,7 @@ import {
   parseBillingMonth,
 } from "@/lib/billing";
 import { formatUsd } from "@/lib/cost";
+import { REPOSITORY_URL } from "@/lib/product";
 import { formatShare, revenueReport } from "@/lib/revenue";
 
 export const metadata: Metadata = {
@@ -67,7 +68,7 @@ export default async function RevenuePage({
       <p className="max-w-3xl text-sm text-foreground/70">
         What each customer was billed in the month, from the{" "}
         <a
-          href="https://github.com/Dominic6018/ai-cost-management-and-billing/blob/main/docs/BILLING.md"
+          href={`${REPOSITORY_URL}/blob/main/docs/BILLING.md`}
           className="underline"
         >
           billing ledger

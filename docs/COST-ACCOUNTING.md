@@ -1,6 +1,6 @@
 # Cost accounting
 
-How the tracker turns a request's token counts into a cost, and how that cost is checked against what the provider billed. It follows one request from the provider's response to the provider's invoice. For the request format see [Recording usage](../README.md#recording-usage), and for what you bill your own customers see [docs/BILLING.md](BILLING.md).
+How MeterVanta turns a request's token counts into a cost, and how that cost is checked against what the provider billed. It follows one request from the provider's response to the provider's invoice. For the request format see [Recording usage](../README.md#recording-usage), and for what you bill your own customers see [docs/BILLING.md](BILLING.md).
 
 The short version:
 

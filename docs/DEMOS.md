@@ -1,6 +1,6 @@
 # Demo scenarios
 
-Runnable stories that show what the tracker is for. Each needs only a tracker with the seed prices (`npm run db:seed`), and the sample apps an API key from the [quickstart](QUICKSTART.md#2-create-api-keys). No provider keys and no spend: provider calls are stand-ins shaped like the real SDKs' responses, so every run stores the same, checkable costs. CI runs each one and checks its output.
+Runnable stories that show what MeterVanta is for. Each needs only a tracker with the seed prices (`npm run db:seed`), and the sample apps an API key from the [quickstart](QUICKSTART.md#2-create-api-keys). No provider keys and no spend: provider calls are stand-ins shaped like the real SDKs' responses, so every run stores the same, checkable costs. CI runs each one and checks its output.
 
 | Scenario                                                      | What it shows                                                                                                                                                                                                 | Run                                       |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
