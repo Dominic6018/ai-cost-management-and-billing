@@ -4,7 +4,7 @@ import { listBillingCustomers } from "@/db/billing";
 import { listPortalLinks } from "@/db/billing-portal";
 import { organizationScope } from "@/db/scope";
 import { requirePermission } from "@/lib/auth";
-import { DashboardNav } from "../../dashboard-nav";
+import { DashboardShell } from "../../dashboard-shell";
 import { createPortalLinkAction, revokePortalLinkAction } from "./actions";
 import { PortalLinkForm } from "./portal-link-form";
 
@@ -44,8 +44,7 @@ export default async function PortalLinksPage({
   ]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/revenue/portal" />
+    <DashboardShell user={user} current="/revenue/portal">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Portal links</h1>
         <p className="max-w-2xl text-sm text-foreground/70">
@@ -155,6 +154,6 @@ export default async function PortalLinksPage({
           </div>
         )}
       </section>
-    </main>
+    </DashboardShell>
   );
 }

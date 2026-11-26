@@ -9,7 +9,7 @@ import {
   ROLE_DESCRIPTIONS,
   TEAM_STATUS_MESSAGES,
 } from "@/lib/team";
-import { DashboardNav } from "../dashboard-nav";
+import { DashboardShell } from "../dashboard-shell";
 import {
   changeRoleAction,
   inviteAction,
@@ -52,8 +52,7 @@ export default async function TeamPage({
   ]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/team" />
+    <DashboardShell user={user} current="/team">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Accounts</h1>
         <p className="max-w-2xl text-sm text-foreground/70">
@@ -242,6 +241,6 @@ export default async function TeamPage({
           </div>
         )}
       </section>
-    </main>
+    </DashboardShell>
   );
 }

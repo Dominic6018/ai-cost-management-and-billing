@@ -7,7 +7,7 @@ import { getProject } from "@/db/projects";
 import { organizationScope } from "@/db/scope";
 import { API_KEY_SCOPE_LABELS } from "@/lib/api-key-form";
 import { requirePermission } from "@/lib/auth";
-import { DashboardNav } from "../../../dashboard-nav";
+import { DashboardShell } from "../../../dashboard-shell";
 import { createApiKeyAction, revokeApiKeyAction } from "./actions";
 import { ApiKeyForm } from "./api-key-form";
 
@@ -46,8 +46,7 @@ export default async function ApiKeysPage({
   const keys = await listProjectApiKeys(db, scope, project.id);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/projects" />
+    <DashboardShell user={user} current="/projects">
       <div className="flex flex-col gap-1">
         <Link href="/projects" className="text-sm text-foreground/60 underline">
           Projects
@@ -149,6 +148,6 @@ export default async function ApiKeysPage({
           </div>
         )}
       </section>
-    </main>
+    </DashboardShell>
   );
 }

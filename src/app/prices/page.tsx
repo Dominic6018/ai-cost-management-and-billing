@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DashboardNav } from "../dashboard-nav";
+import { DashboardShell } from "../dashboard-shell";
 import { db } from "@/db";
 import { listModelPrices } from "@/db/pricing";
 import { DEFAULT_ORGANIZATION_ID } from "@/db/schema";
@@ -56,8 +56,7 @@ export default async function PricesPage() {
   const histories = priceHistories(await listModelPrices(db), now);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/prices" />
+    <DashboardShell user={user} current="/prices">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold tracking-tight">Prices</h1>
@@ -305,6 +304,6 @@ export default async function PricesPage() {
           </table>
         </div>
       )}
-    </main>
+    </DashboardShell>
   );
 }

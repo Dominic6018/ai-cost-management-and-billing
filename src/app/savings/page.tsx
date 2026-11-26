@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardNav } from "../dashboard-nav";
+import { DashboardShell } from "../dashboard-shell";
 import { db } from "@/db";
 import { listProjects } from "@/db/projects";
 import { getCurrentPrices, getSavingsInputs } from "@/db/savings";
@@ -71,8 +71,7 @@ export default async function SavingsPage({
   ];
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/savings" />
+    <DashboardShell user={user} current="/savings">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-semibold tracking-tight">
           Savings estimates
@@ -250,6 +249,6 @@ export default async function SavingsPage({
           </p>
         </>
       )}
-    </main>
+    </DashboardShell>
   );
 }

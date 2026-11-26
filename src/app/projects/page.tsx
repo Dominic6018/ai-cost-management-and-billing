@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DashboardNav } from "../dashboard-nav";
+import { DashboardShell } from "../dashboard-shell";
 import { db } from "@/db";
 import { listProjects } from "@/db/projects";
 import { organizationScope } from "@/db/scope";
@@ -28,8 +28,7 @@ export default async function ProjectsPage() {
   const monthSpend = new Map(overview.projects.map((p) => [p.id, p.month]));
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-4 py-12 sm:px-8">
-      <DashboardNav user={user} current="/projects" />
+    <DashboardShell user={user} current="/projects">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold tracking-tight">Projects</h1>
@@ -140,6 +139,6 @@ export default async function ProjectsPage() {
           </table>
         </div>
       )}
-    </main>
+    </DashboardShell>
   );
 }
