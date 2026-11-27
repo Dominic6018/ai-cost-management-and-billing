@@ -54,6 +54,8 @@ function fakeStripe(mode: "test" | "live" = "test") {
   const byKey = new Map<string, { id: string }>();
   /** Each Stripe customer's email, as Stripe has it. */
   const emails = new Map<string, string>();
+  /** Refusals, which Stripe replays for the same idempotency key. */
+  const refused = new Map<string, Error>();
   const calls: Array<{
     path: string;
     params: Record<string, unknown>;
@@ -81,6 +83,8 @@ function fakeStripe(mode: "test" | "live" = "test") {
         failOn = null;
         throw new Error("Stripe is down");
       }
+      const replayed = refused.get(key);
+      if (replayed) throw replayed;
       const known = byKey.get(key);
       if (known) return known as T;
       const update = /^\/customers\/(.+)$/.exec(path);
@@ -94,9 +98,11 @@ function fakeStripe(mode: "test" | "live" = "test") {
         params.collection_method === "send_invoice" &&
         !emails.get(String(params.customer))
       ) {
-        throw new Error(
+        const refusal = new Error(
           "Stripe refused /invoices: The customer needs a valid email when `collection_method=send_invoice`.",
         );
+        refused.set(key, refusal);
+        throw refusal;
       }
       const prefix =
         { "/customers": "cus", "/invoices": "in", "/invoiceitems": "ii" }[
@@ -432,5 +438,44 @@ describe("the customer's email, which Stripe sends invoices to", () => {
       action: "billing.customer_email_set",
       details: { email: "ap@acme.example.com", previous: null },
     });
+  });
+
+  it("asks Stripe again under a new key once the email changes", async () => {
+    // Stripe has no email for the customer, though the tracker thinks it
+    // was given one: its invoice is refused, and the refusal is saved.
+    const t = await setup({ email: "old@acme.example.com" });
+    const stripe = fakeStripe();
+    await db.insert(billingStripeCustomers).values({
+      customerId: t.customer.id,
+      mode: "test",
+      stripeCustomerId: "cus_lost_email",
+      email: "old@acme.example.com",
+    });
+    await t.entry(10_000_000n);
+    const refusal = /needs a valid email/;
+    await expect(
+      invoiceOpenEntries(db, t.actor, stripe, t.customer),
+    ).rejects.toThrow(refusal);
+    // The same request is refused again: Stripe replays the saved answer.
+    await expect(
+      invoiceOpenEntries(db, t.actor, stripe, t.customer),
+    ).rejects.toThrow(refusal);
+    expect(await invoices(t.customer.id)).toEqual([]);
+
+    const fixed = await setBillingCustomerEmail(
+      db,
+      t.actor,
+      t.customer,
+      "ap@acme.example.com",
+    );
+    expect(await invoiceOpenEntries(db, t.actor, stripe, fixed)).toMatchObject({
+      ok: true,
+      entries: 1,
+    });
+    const invoiceKeys = new Set(
+      stripe.calls.filter((c) => c.path === "/invoices").map((c) => c.key),
+    );
+    expect(invoiceKeys.size).toBe(2);
+    expect(await invoices(t.customer.id)).toHaveLength(1);
   });
 });
