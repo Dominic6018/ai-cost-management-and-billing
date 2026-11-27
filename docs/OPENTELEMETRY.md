@@ -74,13 +74,13 @@ OTEL_EXPORTER_OTLP_TRACES_HEADERS=authorization=Bearer%20act_your_key
 
 ## Reported twice
 
-If the same call is reported by one of the clients and by an OpenTelemetry span, it's stored once. The clients send the provider's response ID (`chatcmpl-...`, `msg_...`, Gemini's `responseId`) as the request ID, and so does a span with `gen_ai.response.id`, which most GenAI instrumentations set. The second report replays the first. Whichever arrives first is kept: if the second one differs, for example because it names the dated model rather than the alias, it's a `request_id_conflict` and isn't stored, so the cost is never counted twice. Conflicts show on [`/ingestion`](../README.md#ingestion-health). A span without `gen_ai.response.id` can't be matched, so instrument a call one way or the other, not both.
+If the same call is reported by one of the clients and by an OpenTelemetry span, it's stored once. The clients send the provider's response ID (`chatcmpl-...`, `msg_...`, Gemini's `responseId`) as the request ID, and so does a span with `gen_ai.response.id`, which most GenAI instrumentations set. The second report replays the first. Whichever arrives first is kept: if the second one differs, for example because it names the dated model rather than the alias, it's a `request_id_conflict` and isn't stored, so the cost is never counted twice. Conflicts show on [`/ingestion`](REFERENCE.md#ingestion-health). A span without `gen_ai.response.id` can't be matched, so instrument a call one way or the other, not both.
 
 A gateway such as LiteLLM that reports through the API should send the provider's response ID as `requestId` for the same effect.
 
 ## Responses
 
-Following OTLP, a successful export returns `200` with `{}`. A span whose model has no price is stored as [unpriced](../README.md#unpriced-usage), not rejected. Spans that couldn't be stored, for example because they have no model or reuse a span ID for different usage, are reported without failing the rest of the export:
+Following OTLP, a successful export returns `200` with `{}`. A span whose model has no price is stored as [unpriced](REFERENCE.md#unpriced-usage), not rejected. Spans that couldn't be stored, for example because they have no model or reuse a span ID for different usage, are reported without failing the rest of the export:
 
 ```json
 {

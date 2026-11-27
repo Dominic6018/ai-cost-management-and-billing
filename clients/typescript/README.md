@@ -129,7 +129,7 @@ await scoped.recordOutcome({ name: "ticket_resolved", outcomeId: ticket.id });
 
 ## Budget check
 
-Ask before an agent step whether the run or the month has room left ([details](../../README.md#budget-check-before-spending)):
+Ask before an agent step whether the run or the month has room left ([details](../../docs/REFERENCE.md#budget-check-before-spending)):
 
 ```ts
 const run = tracker.with({ customerId, runId: agentRun.id });
@@ -149,7 +149,7 @@ const allowed = await run.checkBudget({ estimatedCostUsd: "0.25" }).then(
 ); // fail open
 ```
 
-A check doesn't reserve the money. To stop concurrent steps from overspending together, reserve instead ([details](../../README.md#reserving-budget)):
+A check doesn't reserve the money. To stop concurrent steps from overspending together, reserve instead ([details](../../docs/REFERENCE.md#reserving-budget)):
 
 ```ts
 const hold = await run.reserveBudget({

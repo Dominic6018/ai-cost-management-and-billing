@@ -12,7 +12,7 @@ Thanks for helping. Work happens in small, reviewable steps: an issue, a branch,
 
 ## Running the checks
 
-Set up the project as described in the [README](README.md#getting-started), then:
+Set up the project as described in the [README](docs/REFERENCE.md#getting-started), then:
 
 ```bash
 npm run lint

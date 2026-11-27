@@ -40,7 +40,7 @@ For example, a plan with a $49 fee, $20 included and a multiplier of 1.25, for a
 
 A plan can also say how much a customer may use: `--usage-limit 50` caps the AI API cost of their usage at $50 a UTC month. It's an entitlement, enforced before spending rather than billed:
 
-- [Budget checks and reservations](../README.md#budget-check-before-spending) that name a `customerId` check it, from any project in the organization, and deny with `customer_limit` when the estimate doesn't fit. The answer's `customer` block shows the plan, the limit, the spend and the holds.
+- [Budget checks and reservations](REFERENCE.md#budget-check-before-spending) that name a `customerId` check it, from any project in the organization, and deny with `customer_limit` when the estimate doesn't fit. The answer's `customer` block shows the plan, the limit, the spend and the holds.
 - Spend is the customer's recorded cost this month across the organization's projects; holds are unexpired reservations made for the customer in any of them. Reservations for one customer are decided in turn, so steps in different projects can't overspend it together.
 - A customer that isn't a billing customer, isn't on a plan this month, or is on a plan without a limit is never denied by it. The limit is on AI API cost, not on the usage charge, so it doesn't depend on the multiplier.
 - Like a budget, it only holds for calls that check first. The TypeScript and Python clients send a scoped tracker's customer automatically.
@@ -188,7 +188,7 @@ Amounts on the page are rounded for display, with the exact amount on hover; the
 - **Append-only.** The database refuses to update, delete or truncate ledger entries, whoever asks. To correct an entry, reverse it and add the right one; both stay in the history. An entry can be reversed once, a reversal can't be reversed, and of two reversals at the same moment only one is stored. A customer with entries can't be deleted.
 - **Safe retries.** An adjustment with an entry key (`--key`, unique per organization, such as your invoice line ID) is stored once: repeating it returns the stored entry, and using the key for a different customer, amount or reason is refused.
 - **Separate organizations.** Customers, entries and balances belong to one organization, and the database refuses an entry whose customer is in another. Customer IDs can repeat across organizations.
-- **Audited.** Adding a customer, an adjustment, a reversal, plan changes, monthly charges and credit each write an [audit log](../README.md#dashboard) entry in the same transaction, naming who did it. Entries also keep their author. Replays and refused requests change nothing and aren't logged.
+- **Audited.** Adding a customer, an adjustment, a reversal, plan changes, monthly charges and credit each write an [audit log](REFERENCE.md#dashboard) entry in the same transaction, naming who did it. Entries also keep their author. Replays and refused requests change nothing and aren't logged.
 
 ## Command line
 

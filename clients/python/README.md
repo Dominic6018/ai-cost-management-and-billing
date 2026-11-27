@@ -114,7 +114,7 @@ scoped.record_outcome("ticket_resolved", outcome_id=ticket.id)
 
 ## Budget check
 
-Ask before an agent step whether the run or the month has room left ([details](../../README.md#budget-check-before-spending)):
+Ask before an agent step whether the run or the month has room left ([details](../../docs/REFERENCE.md#budget-check-before-spending)):
 
 ```python
 run = tracker.with_attribution(customer_id=customer_id, run_id=run_id)
@@ -133,7 +133,7 @@ except CostTrackerError:
     allowed = True  # fail open
 ```
 
-A check doesn't reserve the money. To stop concurrent steps from overspending together, reserve instead ([details](../../README.md#reserving-budget)):
+A check doesn't reserve the money. To stop concurrent steps from overspending together, reserve instead ([details](../../docs/REFERENCE.md#reserving-budget)):
 
 ```python
 hold = run.reserve_budget("0.25", reservation_id=f"{run_id}-step-{n}")

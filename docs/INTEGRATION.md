@@ -9,7 +9,7 @@ How to wire MeterVanta into a real application, and how to know the wiring is co
 | TypeScript or JavaScript, calling provider SDKs directly  | The [TypeScript client](../clients/typescript/README.md): one dependency-free file           |
 | Python, calling provider SDKs directly                    | The [Python client](../clients/python/README.md): one file, standard library only            |
 | Already instrumented with OpenTelemetry GenAI conventions | The [OpenTelemetry intake](OPENTELEMETRY.md), through your Collector                         |
-| Anything else: another language, a gateway, a batch job   | [`POST /api/usage`](../README.md#request) with the token counts from the provider's response |
+| Anything else: another language, a gateway, a batch job   | [`POST /api/usage`](REFERENCE.md#request) with the token counts from the provider's response |
 
 **Pick one per call.** A call reported by a client and by a span is stored once only when both carry the provider's response ID; see [Reported twice](OPENTELEMETRY.md#reported-twice). Instrumenting each call one way avoids the question.
 
@@ -22,7 +22,7 @@ The tracker only receives token counts. It never calls a provider and never sees
 - **A `read` key for reporting tools** only. It can't send anything, and an `ingest` key can't read reports.
 - **Server-side only.** Keep keys in a secret store or environment variable, such as `COST_TRACKER_API_KEY`, never in a browser or mobile app. A key is shown once; a lost key is replaced, not recovered.
 
-See [API keys](../README.md#api-keys).
+See [API keys](REFERENCE.md#api-keys).
 
 ## 3. Request IDs and retries
 
@@ -74,7 +74,7 @@ Cost tracking should never break your product:
 
 | You want to                                          | Call                                                                                                                                                                                      |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Know when a budget is crossed                        | Nothing in your app: set the budget on the project, configure a webhook, Slack or email, and schedule `npm run budget-alerts` ([Budget notifications](../README.md#budget-notifications)) |
+| Know when a budget is crossed                        | Nothing in your app: set the budget on the project, configure a webhook, Slack or email, and schedule `npm run budget-alerts` ([Budget notifications](REFERENCE.md#budget-notifications)) |
 | Stop a single agent step before it overspends        | `checkBudget()` / `check_budget()` before the step                                                                                                                                        |
 | Stop **concurrent** steps from overspending together | `reserveBudget()` before each step, then record its usage with the same `reservationId`, or `releaseBudget()` if it didn't spend                                                          |
 
@@ -82,11 +82,11 @@ Cost tracking should never break your product:
 - A denial is an answer, not an error. What to do when the tracker can't be reached, fail open or fail closed, is your decision; the [client guide](../clients/typescript/README.md#budget-check) shows both.
 - With a `customerId`, the customer's [plan usage limit](BILLING.md#usage-limits) is checked too.
 
-See [Budget check before spending](../README.md#budget-check-before-spending), and the [multi-model agent](../examples/multi-model-agent/README.md) for reservations in a running agent.
+See [Budget check before spending](REFERENCE.md#budget-check-before-spending), and the [multi-model agent](../examples/multi-model-agent/README.md) for reservations in a running agent.
 
 ## 8. Outcomes
 
-Record results, such as a resolved ticket, with the same attribution as the usage that produced them, so the dashboard shows cost per outcome. Send an `outcomeId`, your ID for the result, so a retry isn't counted twice. Record outcomes in the same project as their usage. See [Recording outcomes](../README.md#recording-outcomes).
+Record results, such as a resolved ticket, with the same attribution as the usage that produced them, so the dashboard shows cost per outcome. Send an `outcomeId`, your ID for the result, so a retry isn't counted twice. Record outcomes in the same project as their usage. See [Recording outcomes](REFERENCE.md#recording-outcomes).
 
 ## 9. Check the integration
 
@@ -95,7 +95,7 @@ Before relying on the numbers:
 1. **`/ingestion`** shows, per project and day, what was stored, unpriced, replayed, in conflict and invalid. Conflicts and invalid requests are usage that wasn't stored; they should be zero.
 2. **Unpriced usage** shows on the overview with its models. Add the missing prices at `/prices/new` and run `npm run reprice`.
 3. **The usage page** (`/usage`) filters by customer, user, feature, run and tag. Check that a sample of real calls carries the attribution you expect.
-4. **Reconcile with the bill.** After a few days, `npm run reconcile` compares recorded costs with Anthropic's, OpenAI's or Google Cloud's billing, per day. A recorded total well under the bill usually means calls that aren't reported. See [Reconciling with provider bills](../README.md#reconciling-with-provider-bills) and [Cost accounting](COST-ACCOUNTING.md#7-reconciling-with-provider-bills).
+4. **Reconcile with the bill.** After a few days, `npm run reconcile` compares recorded costs with Anthropic's, OpenAI's or Google Cloud's billing, per day. A recorded total well under the bill usually means calls that aren't reported. See [Reconciling with provider bills](REFERENCE.md#reconciling-with-provider-bills) and [Cost accounting](COST-ACCOUNTING.md#7-reconciling-with-provider-bills).
 
 ## Go-live checklist
 

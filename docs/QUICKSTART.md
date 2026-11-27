@@ -14,7 +14,7 @@ docker compose run --rm migrate npm run db:seed  # model prices and the sample-a
 echo 'choose a long password' | docker compose run --rm -T migrate npm run --silent user -- create --email you@example.com
 ```
 
-Without Docker, follow [Getting started](../README.md#getting-started) and run the same `npm run` commands directly. The app is at http://localhost:3000.
+Without Docker, follow [Getting started](REFERENCE.md#getting-started) and run the same `npm run` commands directly. The app is at http://localhost:3000.
 
 ## 2. Create API keys
 
@@ -85,7 +85,7 @@ Each run uses new request IDs, so running it again adds the same amounts again. 
 
 - **TypeScript or Python:** copy the client file into your project; see the [TypeScript](../clients/typescript/README.md) and [Python](../clients/python/README.md) client guides, including streaming, budgets and outcomes.
 - **OpenTelemetry:** point your Collector at the tracker; see [OPENTELEMETRY.md](OPENTELEMETRY.md).
-- **Anything else:** call [`POST /api/usage`](../README.md#request).
+- **Anything else:** call [`POST /api/usage`](REFERENCE.md#request).
 
 Keys go in server-side code only. Create one key per service, so you can revoke one without the others.
 
@@ -98,7 +98,7 @@ Before going live, read the [integration guide](INTEGRATION.md): attribution, re
 | `fetch failed`, `ECONNREFUSED` or `Connection refused`           | The app isn't running at that URL. Check `docker compose ps`, and pass the right base URL as the first argument.                                                                        |
 | `401 unauthorized`                                               | The key is mistyped, revoked, or from another install. Create a new one; keys can't be shown again.                                                                                     |
 | `403 insufficient_scope`                                         | A read key was used to send usage, or an ingest key to read reports. Each key does one or the other.                                                                                    |
-| `Stored ...: $null`, or `"pricingStatus":"unpriced"`             | There's no price for that model. Run `npm run db:seed` for the sample prices, or add one at `/prices/new` and run `npm run reprice`. See [Unpriced usage](../README.md#unpriced-usage). |
+| `Stored ...: $null`, or `"pricingStatus":"unpriced"`             | There's no price for that model. Run `npm run db:seed` for the sample prices, or add one at `/prices/new` and run `npm run reprice`. See [Unpriced usage](REFERENCE.md#unpriced-usage). |
 | `409 request_id_conflict`                                        | That request ID was already stored with different usage. Each provider response has its own ID, so this usually means two different calls were given the same one.                      |
 | `ERR_UNKNOWN_FILE_EXTENSION ".ts"` or a syntax error at `import` | Node is older than 22.18 and can't run the TypeScript client. Upgrade Node, or compile `cost-tracker.ts` with your build.                                                               |
 | `skipped: over budget` in the sample app                         | The project's monthly or run budget is used up, so the agent stopped before spending. Raise it under `/projects`, or wait for the next month.                                           |

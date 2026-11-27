@@ -8,7 +8,7 @@ For each of four tickets from two customers, [app.mjs](app.mjs):
 2. Drafts a reply with a streamed Anthropic response through `trackStream()`, or summarizes a long thread with Gemini through `track()`. Both report in the background and return the response unchanged.
 3. Records a `ticket_resolved` outcome.
 
-Everything a ticket records carries its `customerId`, `feature: "support-agent"`, a `runId` per ticket and a `sample` tag per run. At the end it waits for the background reports, checks none failed, and, given a read key, reads the run's events back from the [reporting API](../../README.md#reporting-api) and totals them per customer.
+Everything a ticket records carries its `customerId`, `feature: "support-agent"`, a `runId` per ticket and a `sample` tag per run. At the end it waits for the background reports, checks none failed, and, given a read key, reads the run's events back from the [reporting API](../../docs/REFERENCE.md#reporting-api) and totals them per customer.
 
 ## Run
 
