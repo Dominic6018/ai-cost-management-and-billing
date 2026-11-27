@@ -39,7 +39,7 @@ _Know what your AI costs. Know what your AI earns._
 | **Spending over time**                                                                                                                                                                                                                                              | **Your customer's statement**                                                                                                                                                                                                                 |
 | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/spend-dark.png"><img alt="Daily AI spending over 90 days, and spending by provider" src="docs/screenshots/spend-light.png"></picture>                                                | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/portal-dark.png"><img alt="A customer's read-only statement: what they owe, their plan and their charges" src="docs/screenshots/portal-light.png"></picture>   |
 
-<sub>Screenshots use sample data.</sub>
+<sub>Screenshots from the live deployment, with sample data.</sub>
 
 ## How it works
 
