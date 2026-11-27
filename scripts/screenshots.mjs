@@ -8,6 +8,10 @@
 //   its demo-billing organization, and set SHOT_PORTAL_PATH to the portal
 //   link it prints (/portal/...).
 //
+// SHOT_PAGES (optional) captures only the named pages of the set, e.g.
+// "overview,spend,breakdown" or "revenue,portal". Every page but
+// portal-links and team (admin only) reads fine as a viewer.
+//
 // Usage: SHOT_EMAIL=... SHOT_PASSWORD=... node scripts/screenshots.mjs [base URL] [output dir]
 // CHROME_PATH overrides the browser (default: google-chrome).
 
@@ -46,26 +50,37 @@ const SETS = {
     ["savings", "/savings"],
     ["prices", "/prices"],
   ],
-  billing: () => {
-    const portal = process.env.SHOT_PORTAL_PATH;
-    assert.ok(
-      portal && /^\/portal\/[A-Za-z0-9_-]+$/.test(portal),
-      "set SHOT_PORTAL_PATH to the /portal/... link db:demo-billing prints",
-    );
-    return [
-      ["revenue", `/revenue?month=${lastMonth()}`],
-      ["portal-links", "/revenue/portal"],
-      ["team", "/team"],
-      ["portal", portal],
-    ];
-  },
+  billing: () => [
+    ["revenue", `/revenue?month=${lastMonth()}`],
+    ["portal-links", "/revenue/portal"],
+    ["team", "/team"],
+    // Checked below, only when the portal is captured.
+    ["portal", process.env.SHOT_PORTAL_PATH],
+  ],
 };
 const set = process.env.SHOT_SET ?? "dashboard";
 assert.ok(
   Object.hasOwn(SETS, set),
   `SHOT_SET must be one of: ${Object.keys(SETS).join(", ")}`,
 );
-const PAGES = SETS[set]();
+const wanted = process.env.SHOT_PAGES?.split(",")
+  .map((name) => name.trim())
+  .filter(Boolean);
+const all = SETS[set]();
+for (const name of wanted ?? []) {
+  assert.ok(
+    all.some(([page]) => page === name),
+    `SHOT_PAGES: no page "${name}" in the ${set} set (${all.map(([page]) => page).join(", ")})`,
+  );
+}
+const PAGES = wanted ? all.filter(([page]) => wanted.includes(page)) : all;
+if (PAGES.some(([page]) => page === "portal")) {
+  const portal = PAGES.find(([page]) => page === "portal")[1];
+  assert.ok(
+    portal && /^\/portal\/[A-Za-z0-9_-]+$/.test(portal),
+    "set SHOT_PORTAL_PATH to the /portal/... link db:demo-billing prints",
+  );
+}
 const VIEWPORT = { width: 1280, height: 900, deviceScaleFactor: 1 };
 
 const profile = await mkdtemp(path.join(tmpdir(), "screenshots-"));
