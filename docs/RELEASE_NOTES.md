@@ -2,9 +2,9 @@
 
 ## 0.1.0: the first release
 
-> **Not tagged yet.** These notes describe the code on `main`, at version 0.1.0 in `package.json`. No Git tag or GitHub release has been made; the maintainer creates them when 0.1.0 is cut.
+Released 28 November 2026, tagged `v0.1.0`.
 
-MeterVanta is a self-hosted ledger of what your AI API calls cost, by project, customer, feature and agent run, with no prompt data stored. It records token counts from OpenAI, Anthropic and Gemini, prices them exactly with dated, sourced prices, and checks the result against the providers' bills. On top of that sit budgets that can stop an agent before it overspends, and an optional ledger for billing your own customers for their AI usage.
+**MeterVanta — AI Cost Intelligence & Usage-Based Billing Platform.** MeterVanta is a self-hosted ledger of what your AI API calls cost, by project, customer, feature and agent run, with no prompt data stored. It records token counts from OpenAI, Anthropic and Gemini, prices them exactly with dated, sourced prices, and checks the result against the providers' bills. On top of that sit budgets that can stop an agent before it overspends, and an optional ledger for billing your own customers for their AI usage.
 
 The milestones below are in [docs/ROADMAP.md](ROADMAP.md), with an issue or PR for each item.
 
@@ -26,6 +26,7 @@ The milestones below are in [docs/ROADMAP.md](ROADMAP.md), with an issue or PR f
 
 ### Dashboard and reports
 
+- **A sidebar layout** on every dashboard page, in light and dark mode, that folds into a menu on small screens, and a public landing page that says what MeterVanta does.
 - The overview with month-end forecasts and spike detection, spend over time, usage events with filters, and cost by customer, user, feature, run, tag and outcome (cost per resolved ticket, for example).
 - **Why spend changed:** volume, model mix, tokens per request and cost per token, adding up to the change exactly.
 - **Savings estimates** from caching, batching and model choice, labelled as estimates.
@@ -47,13 +48,14 @@ The milestones below are in [docs/ROADMAP.md](ROADMAP.md), with an issue or PR f
 - An append-only billing ledger kept apart from provider cost: customers, plans with a fee, included usage and a usage multiplier, monthly charges, adjustments and prepaid credit. See [docs/BILLING.md](BILLING.md).
 - Plan usage limits checked before spending.
 - `/revenue`: each customer's revenue next to their AI API cost, as "revenue minus AI API cost", never called profit.
-- Draft Stripe invoices, in test mode by default, and payments posted back from Stripe's signed webhooks.
+- Draft Stripe invoices, in test mode by default, and invoice status (finalized, paid, failed, void, uncollectible) reported back through Stripe's signed webhooks. Each customer has an email for their invoices (`customer-email`), which Stripe requires.
+- Invoice lines are written for the customer: a usage charge reads "Usage, 2026-10" and applied credit "Prepaid credit applied", never your AI API cost or markup.
 - A read-only customer portal reached by a secret link, showing a customer their statement and never your costs.
 
 ### Demos and documents
 
 - Three runnable demos that need no provider keys: [a support SaaS](../examples/support-agent/README.md), [multi-model agents under a run budget](../examples/multi-model-agent/README.md), and [usage-based billing](BILLING.md#the-billing-demo). See [docs/DEMOS.md](DEMOS.md).
-- [Quickstart](QUICKSTART.md), [integration guide](INTEGRATION.md), [architecture](ARCHITECTURE.md), [cost accounting](COST-ACCOUNTING.md), [deployment](DEPLOYMENT.md) and [OpenTelemetry](OPENTELEMETRY.md).
+- A short [README](../README.md) for business readers, and for developers the [quickstart](QUICKSTART.md), [integration guide](INTEGRATION.md), [technical reference](REFERENCE.md), [architecture](ARCHITECTURE.md), [cost accounting](COST-ACCOUNTING.md), [deployment](DEPLOYMENT.md) and [OpenTelemetry](OPENTELEMETRY.md) guides.
 
 ### Requirements
 
@@ -63,7 +65,7 @@ The milestones below are in [docs/ROADMAP.md](ROADMAP.md), with an issue or PR f
 
 ### Installing
 
-Follow [docs/DEPLOYMENT.md](DEPLOYMENT.md): Docker Compose on one server, or Vercel with hosted Postgres. `npm run db:migrate` applies the migrations (`drizzle/0000` to `0042`), and `npm run db:seed` loads the seed prices. As the first release, there's nothing to upgrade from.
+Follow [docs/DEPLOYMENT.md](DEPLOYMENT.md): Docker Compose on one server, or Vercel with hosted Postgres. `npm run db:migrate` applies the migrations (`drizzle/0000` to `0043`), and `npm run db:seed` loads the seed prices. As the first release, there's nothing to upgrade from.
 
 ### Known limitations
 
@@ -72,7 +74,7 @@ Follow [docs/DEPLOYMENT.md](DEPLOYMENT.md): Docker Compose on one server, or Ver
 - **Costs are at list price.** Negotiated discounts and credits show up only as differences when reconciling. Only USD is supported.
 - **Charges other than tokens and web searches**, such as code execution, storage and fine-tuning, aren't recorded; reconciliation lists them.
 - **Already-priced usage is never re-costed.** A wrong price is corrected for later usage by adding a new price.
-- **Stripe invoicing hasn't been run against a live Stripe account.** It's tested with a fake Stripe client and with webhooks signed the way Stripe signs them. Try it in Stripe's test mode first.
+- **Stripe has been used in test mode only.** Draft invoices and webhooks were run end to end against a Stripe sandbox, but never in live mode. Live keys are refused unless `STRIPE_ALLOW_LIVE=true` is set; try your own setup in test mode first.
 - **Organizations are created from the command line**, and an account belongs to one organization. Prices are shared across the install.
 - **Monthly charges and budget alerts are commands you schedule.** Nothing runs in the background inside the app.
 - **Days are UTC days.**
