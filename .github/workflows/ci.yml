@@ -1010,7 +1010,7 @@ jobs:
           PASSWORD=$(openssl rand -base64 24)
           echo "::add-mask::$PASSWORD"
           echo "$PASSWORD" | docker compose run --rm -T migrate npm run --silent user -- create --email docker@example.com
-      - name: The README quick start loads prices and demo data
+      - name: The Docker quick start in the technical reference loads prices and demo data
         run: |
           docker compose run --rm migrate npm run --silent db:seed
           docker compose run --rm migrate npm run --silent db:demo | tee demo.log

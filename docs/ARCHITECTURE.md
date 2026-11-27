@@ -1,6 +1,6 @@
 # Architecture
 
-How MeterVanta fits together, and why it's built this way. It's one Next.js application backed by one Postgres database, plus command-line tools and client libraries that use the same code. For each file's job see [Project structure](../README.md#project-structure), and for the tables see [Data model](../README.md#data-model).
+How MeterVanta fits together, and why it's built this way. It's one Next.js application backed by one Postgres database, plus command-line tools and client libraries that use the same code. For each file's job see [Project structure](REFERENCE.md#project-structure), and for the tables see [Data model](REFERENCE.md#data-model).
 
 ```mermaid
 flowchart LR
@@ -101,4 +101,4 @@ Each change is saved in the same transaction as its audit entry (`audited()` in 
 - **Integration tests** (`*.integration.test.ts`) run the database code against a real, migrated Postgres. That includes concurrency, such as two holds or two role changes racing.
 - **End-to-end checks in CI:** a dev server is driven through its real forms and APIs (`scripts/smoke-projects.mjs`), and the sample apps, demos and command-line tools run with their output checked.
 
-See [Testing](../README.md#testing) for what each CI job runs.
+See [Testing](REFERENCE.md#testing) for what each CI job runs.

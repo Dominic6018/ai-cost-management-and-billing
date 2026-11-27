@@ -1,6 +1,6 @@
 # Cost accounting
 
-How MeterVanta turns a request's token counts into a cost, and how that cost is checked against what the provider billed. It follows one request from the provider's response to the provider's invoice. For the request format see [Recording usage](../README.md#recording-usage), and for what you bill your own customers see [docs/BILLING.md](BILLING.md).
+How MeterVanta turns a request's token counts into a cost, and how that cost is checked against what the provider billed. It follows one request from the provider's response to the provider's invoice. For the request format see [Recording usage](REFERENCE.md#recording-usage), and for what you bill your own customers see [docs/BILLING.md](BILLING.md).
 
 The short version:
 
@@ -25,7 +25,7 @@ Anthropic's `input_tokens` leaves out cache reads and writes, so they're added b
 
 ## 2. The price
 
-Prices live in `model_pricing`, one row per provider, model and tier, each with the date it starts (`effective_from`), the date it ends (`effective_to`, if any), the source URL it was read from and the day it was checked. `npm run db:seed` loads the [seed prices](../README.md#seed-prices); admins of the default organization add more at `/prices/new`.
+Prices live in `model_pricing`, one row per provider, model and tier, each with the date it starts (`effective_from`), the date it ends (`effective_to`, if any), the source URL it was read from and the day it was checked. `npm run db:seed` loads the [seed prices](REFERENCE.md#seed-prices); admins of the default organization add more at `/prices/new`.
 
 - **Priced as of `occurredAt`.** A request is priced with the row in effect when it **happened**, not when it was reported. Ranges are half-open: a price starting at 2026-12-01T00:00Z applies to a request at exactly that time, and the one it replaces doesn't.
 - **One price at a time.** Adding a price ends the earlier one where the new one starts, so a model's history reads as one price after another.
@@ -91,7 +91,7 @@ When no price applies, the request is stored anyway, with no cost, `pricing_stat
 
 Each of these would otherwise mean a wrong cost: batch at the full price, audio as cheaper text, searches as free. Unpriced usage is in no total, budget, notification, reconciliation or FOCUS export; the CSV export marks it in a `pricing_status` column, and the dashboard shows how much there is.
 
-To price it, add the missing price at `/prices/new` with a start **before** the usage, then run `npm run reprice` (`-- --dry-run` to preview). Each request is priced with the rate in effect when it happened, as if the price had been there all along. A request is priced at most once, even by two runs at the same time, and each run is in the audit log. See [Unpriced usage](../README.md#unpriced-usage).
+To price it, add the missing price at `/prices/new` with a start **before** the usage, then run `npm run reprice` (`-- --dry-run` to preview). Each request is priced with the rate in effect when it happened, as if the price had been there all along. A request is priced at most once, even by two runs at the same time, and each run is in the audit log. See [Unpriced usage](REFERENCE.md#unpriced-usage).
 
 ## 6. When prices change
 
@@ -119,7 +119,7 @@ OpenAI's costs and Google's export don't name models in a way the tracker can ma
 - **Flagged:** a row is flagged when recorded and billed differ by more than 2% of the billed amount (`--tolerance`) **and** by at least one cent, since bills are in rounded units. The difference is recorded minus billed, so a negative one means the tracker under-counts.
 - Anthropic's cost report is in cents with fractions; it's converted to micro-dollars exactly, rounding half away from zero.
 
-The command and its options are in [Reconciling with provider bills](../README.md#reconciling-with-provider-bills).
+The command and its options are in [Reconciling with provider bills](REFERENCE.md#reconciling-with-provider-bills).
 
 ## What this doesn't cover
 
