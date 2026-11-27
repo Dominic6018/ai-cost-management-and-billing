@@ -164,10 +164,12 @@ export async function invoiceOpenEntries(
         };
       }
 
-      // The same entries always give the same keys.
+      // The same entries and email always give the same keys. Stripe
+      // replays a key's first response for a day, errors included, so a
+      // refusal fixed by a new email has to be asked again under a new key.
       const run = createHash("sha256")
         .update(
-          `${client.mode}:${customer.id}:${lines.map((l) => l.id).join(",")}`,
+          `${client.mode}:${customer.id}:${email}:${lines.map((l) => l.id).join(",")}`,
         )
         .digest("hex")
         .slice(0, 32);
