@@ -85,7 +85,9 @@ npm run billing -- stripe-invoice                    # every customer with entri
 npm run billing -- stripe-invoice --customer cus_42
 ```
 
-Each run creates a **draft** invoice in Stripe, in USD, for the customer's ledger entries that haven't been on one: plan fees, usage charges, adjustments, reversals and applied credit, one item each. You review and send it from the Stripe dashboard; nothing is sent or charged automatically. The customer is created in Stripe the first time, with their name and customer ID.
+Each run creates a **draft** invoice in Stripe, in USD, for the customer's ledger entries that haven't been on one: plan fees, usage charges, adjustments, reversals and applied credit, one item each. You review and send it from the Stripe dashboard; nothing is sent or charged automatically. The customer is created in Stripe the first time, with their name, email and customer ID.
+
+**Each customer needs an email.** Stripe sends invoices by email, and refuses to create one for a customer without an address. Add it with the customer (`customer-add --email billing@acme.com`) or later (`npm run billing -- customer-email --customer cus_42 --email billing@acme.com`). A customer without one is skipped, with a message, before anything reaches Stripe. A changed email is given to Stripe with the next invoice, and every change is in the audit log.
 
 - **Whole cents.** Stripe works in cents, so each entry is rounded to the cent, half away from zero; both amounts are kept. An entry under half a cent is recorded as invoiced with no Stripe item.
 - **Written for the customer.** Each item carries the entry's description, which the customer reads, except for usage charges. A usage charge's ledger description spells out its AI API cost and your multiplier for your own records, so its item reads just "Usage, 2026-10". The portal words it the same way. Write adjustment and credit descriptions for the customer.
@@ -193,7 +195,8 @@ Amounts on the page are rounded for display, with the exact amount on hover; the
 ## Command line
 
 ```bash
-npm run billing -- customer-add --customer cus_42 --name "Acme Inc."
+npm run billing -- customer-add --customer cus_42 --name "Acme Inc." --email billing@acme.com
+npm run billing -- customer-email --customer cus_42 --email ap@acme.com   # where their invoices go
 npm run billing -- adjust --customer cus_42 --amount 250 --reason "Onboarding, November" --key inv-1042-1
 npm run billing -- adjust --customer cus_42 --amount=-25 --reason "Goodwill credit"
 npm run billing -- reverse --entry <entry id> --reason "Charged twice"

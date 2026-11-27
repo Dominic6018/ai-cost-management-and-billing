@@ -3,6 +3,7 @@
  * from what the providers charge. Amounts are exact micro-dollars.
  */
 
+import { z } from "zod";
 import type { AuditEntry } from "./audit";
 import { MAX_ATTRIBUTION_LENGTH } from "./attribution";
 import { microsToDecimal } from "./budget";
@@ -15,6 +16,16 @@ export const MAX_ENTRY_KEY_LENGTH = 200;
 export const MAX_CUSTOMER_NAME_LENGTH = 200;
 
 export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
+
+const customerEmail = z.string().trim().max(254).pipe(z.email());
+
+/** A billing customer's email, where their invoices go. */
+export function parseCustomerEmail(value: string): Parsed<string> {
+  const parsed = customerEmail.safeParse(value);
+  return parsed.success
+    ? { ok: true, value: parsed.data }
+    : { ok: false, error: `Not an email address: "${value.trim()}"` };
+}
 
 /**
  * A signed USD amount such as "12.50" or "-0.000001", in micro-dollars.

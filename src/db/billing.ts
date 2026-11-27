@@ -36,7 +36,12 @@ export type CreateCustomerResult =
 export function createBillingCustomer(
   db: Pick<Database, "transaction">,
   actor: AuditActor,
-  input: InOrganization & { externalId: string; name: string },
+  input: InOrganization & {
+    externalId: string;
+    name: string;
+    /** Where their invoices go; already validated. */
+    email?: string | null;
+  },
 ): Promise<CreateCustomerResult> {
   return audited(
     db,
@@ -59,6 +64,39 @@ export function createBillingCustomer(
           };
     },
   );
+}
+
+/**
+ * Sets the email a customer's invoices go to, with an audit log entry.
+ * The next Stripe invoice gives it to Stripe.
+ */
+export function setBillingCustomerEmail(
+  db: Pick<Database, "transaction">,
+  actor: AuditActor,
+  customer: BillingCustomer,
+  email: string,
+): Promise<BillingCustomer> {
+  return audited(db, actor, async (tx): Promise<Change<BillingCustomer>> => {
+    const [updated] = await tx
+      .update(billingCustomers)
+      .set({ email })
+      .where(
+        and(
+          eq(billingCustomers.id, customer.id),
+          eq(billingCustomers.organizationId, customer.organizationId),
+        ),
+      )
+      .returning();
+    return {
+      result: updated,
+      entry: {
+        action: "billing.customer_email_set",
+        target: customer.externalId,
+        details: { email, previous: customer.email },
+        organizationId: customer.organizationId,
+      },
+    };
+  });
 }
 
 export async function findBillingCustomer(

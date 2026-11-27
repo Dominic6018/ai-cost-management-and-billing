@@ -67,18 +67,21 @@ const CUSTOMERS = [
   {
     externalId: "cus_brightline",
     name: "Brightline",
+    email: "billing@brightline.example.com",
     plan: "starter",
     requests: 12,
   },
   {
     externalId: "cus_harbor",
     name: "Harbor Labs",
+    email: "accounts@harborlabs.example.com",
     plan: "scale",
     requests: 160,
   },
   {
     externalId: "cus_quill",
     name: "Quill",
+    email: "finance@quill.example.com",
     plan: "starter",
     requests: 4,
     prepaidMicros: 20_000_000n,
@@ -189,6 +192,8 @@ export async function runBillingDemo(
       ...scope,
       externalId: spec.externalId,
       name: spec.name,
+      // On example.com, which never receives mail, so Stripe can invoice them.
+      email: spec.email,
     });
     if (!added.ok) throw new Error(`Couldn't add ${spec.externalId}.`);
     const customer = added.customer;

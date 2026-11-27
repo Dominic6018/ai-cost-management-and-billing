@@ -48,6 +48,7 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   "account.invited": "Invited account",
   "account.invitation_revoked": "Revoked invitation",
   "billing.portal_link_created": "Created portal link",
+  "billing.customer_email_set": "Set billing customer's email",
   "billing.portal_link_revoked": "Revoked portal link",
 };
 

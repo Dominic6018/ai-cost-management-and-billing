@@ -302,6 +302,13 @@
       "when": 1795197567405,
       "tag": "0042_billing_portal_links",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1795741508829,
+      "tag": "0043_billing_customer_email",
+      "breakpoints": true
     }
   ]
 }
