@@ -203,13 +203,16 @@ export const monthLabel = (startsOn: string) => startsOn.slice(0, 7);
  * An entry's description as the customer reads it, on the portal and on
  * Stripe invoices. A usage charge's own description is written for staff
  * and spells out the AI API cost and the plan's multiplier, so customers
- * see just its month instead. Everything else is shown as written.
+ * see just its month instead. Applied credit's description counts the
+ * grants it came from, which means nothing to a customer, so it reads
+ * "Prepaid credit applied". Everything else is shown as written.
  */
 export function customerDescription(entry: {
   kind: BillingEntryKind;
   description: string;
   period: string | null;
 }): string {
+  if (entry.kind === "credit_applied") return "Prepaid credit applied";
   if (entry.kind !== "usage_charge") return entry.description;
   return entry.period ? `Usage, ${monthLabel(entry.period)}` : "Usage";
 }
