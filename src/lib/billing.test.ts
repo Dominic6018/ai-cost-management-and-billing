@@ -332,6 +332,16 @@ describe("customerDescription", () => {
     ).toBe("Usage");
   });
 
+  it("calls applied credit what it is, without counting grants", () => {
+    expect(
+      customerDescription({
+        kind: "credit_applied",
+        description: "Credit applied from 2 grant(s)",
+        period: null,
+      }),
+    ).toBe("Prepaid credit applied");
+  });
+
   it("shows other entries as written", () => {
     for (const kind of ["adjustment", "plan_fee", "payment"] as const) {
       expect(
