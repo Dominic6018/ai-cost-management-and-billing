@@ -712,7 +712,8 @@ jobs:
           # The database refuses to change the ledger
           if psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "UPDATE billing_ledger_entries SET amount_usd = 1 WHERE id = '$ENTRY'"; then exit 1; fi
           if psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DELETE FROM billing_ledger_entries WHERE id = '$ENTRY'"; then exit 1; fi
-          test "$(psql "$DATABASE_URL" -tAc "SELECT count(*) FROM audit_log WHERE action LIKE 'billing.%' AND target = '$C'")" = 4
+          # Added, two adjustments, a reversal and the email
+          test "$(psql "$DATABASE_URL" -tAc "SELECT count(*) FROM audit_log WHERE action LIKE 'billing.%' AND target = '$C'")" = 5
           # Plans: exact terms, changes by month, never in the past
           THIS=$(date -u +%Y-%m); FIRST="$THIS-01"
           NEXT=$(date -u -d "$FIRST +1 month" +%Y-%m)
