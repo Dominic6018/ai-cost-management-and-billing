@@ -17,7 +17,7 @@ import {
 
 type Database = Pick<
   PgDatabase<PgQueryResultHKT>,
-  "select" | "insert" | "transaction"
+  "select" | "insert" | "update" | "transaction"
 >;
 type Change<T> = { result: T; entry: AuditEntry | null };
 
@@ -27,20 +27,39 @@ type Change<T> = { result: T; entry: AuditEntry | null };
  * idempotency key makes a retry within a day return the same customer.
  */
 export async function ensureStripeCustomer(
-  db: Pick<Database, "select" | "insert">,
+  db: Pick<Database, "select" | "insert" | "update">,
   client: StripeClient,
-  customer: BillingCustomer,
+  customer: BillingCustomer & { email: string },
 ): Promise<string> {
   const mine = and(
     eq(billingStripeCustomers.customerId, customer.id),
     eq(billingStripeCustomers.mode, client.mode),
   );
   const [known] = await db.select().from(billingStripeCustomers).where(mine);
-  if (known) return known.stripeCustomerId;
+  if (known) {
+    // Stripe has an older email, or none: give it the current one, once.
+    if (known.email !== customer.email) {
+      const emailKey = createHash("sha256")
+        .update(customer.email)
+        .digest("hex")
+        .slice(0, 16);
+      await client.post<{ id: string }>(
+        `/customers/${known.stripeCustomerId}`,
+        { email: customer.email },
+        `tracker-customer-email-${client.mode}-${customer.id}-${emailKey}`,
+      );
+      await db
+        .update(billingStripeCustomers)
+        .set({ email: customer.email })
+        .where(mine);
+    }
+    return known.stripeCustomerId;
+  }
   const created = await client.post<{ id: string }>(
     "/customers",
     {
       name: customer.name,
+      email: customer.email,
       metadata: {
         tracker_customer_id: customer.id,
         customer_id: customer.externalId,
@@ -54,6 +73,7 @@ export async function ensureStripeCustomer(
       customerId: customer.id,
       mode: client.mode,
       stripeCustomerId: created.id,
+      email: customer.email,
     })
     .onConflictDoNothing();
   // Another run may have saved one first; use whichever was saved.
@@ -64,7 +84,9 @@ export async function ensureStripeCustomer(
 export type StripeInvoiceResult =
   | { ok: true; invoice: StripeInvoice; entries: number }
   | { ok: false; error: "nothing_to_invoice" }
-  | { ok: false; error: "nothing_owed"; balanceCents: bigint };
+  | { ok: false; error: "nothing_owed"; balanceCents: bigint }
+  /** Stripe sends invoices by email, so the customer needs one first. */
+  | { ok: false; error: "no_email" };
 
 /**
  * Creates a draft Stripe invoice for the customer's ledger entries not
@@ -78,12 +100,18 @@ export type StripeInvoiceResult =
  * already created, and the entries are recorded only once it's all done.
  */
 export async function invoiceOpenEntries(
-  db: Pick<Database, "select" | "insert" | "transaction">,
+  db: Pick<Database, "select" | "insert" | "update" | "transaction">,
   actor: AuditActor,
   client: StripeClient,
   customer: BillingCustomer,
 ): Promise<StripeInvoiceResult> {
-  const stripeCustomerId = await ensureStripeCustomer(db, client, customer);
+  // Checked before anything reaches Stripe, so nothing is left half made.
+  const { email } = customer;
+  if (!email) return { ok: false, error: "no_email" };
+  const stripeCustomerId = await ensureStripeCustomer(db, client, {
+    ...customer,
+    email,
+  });
   return audited(
     db,
     actor,
@@ -232,6 +260,7 @@ export async function customersWithOpenEntries(
       organizationId: billingCustomers.organizationId,
       externalId: billingCustomers.externalId,
       name: billingCustomers.name,
+      email: billingCustomers.email,
       createdAt: billingCustomers.createdAt,
     })
     .from(billingCustomers)

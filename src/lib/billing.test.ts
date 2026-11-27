@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  parseCustomerEmail,
   customerDescription,
   customerCreatedEntry,
   formatEntryUsd,
@@ -341,5 +342,21 @@ describe("customerDescription", () => {
         }),
       ).toBe("Team plan, 2026-10");
     }
+  });
+});
+
+describe("parseCustomerEmail", () => {
+  it("accepts an address, trimmed", () => {
+    expect(parseCustomerEmail("  ap@acme.example.com ")).toEqual({
+      ok: true,
+      value: "ap@acme.example.com",
+    });
+  });
+
+  it("refuses anything that isn't one", () => {
+    for (const value of ["", "acme", "ap@", "@acme.com", "a b@acme.com"]) {
+      expect(parseCustomerEmail(value).ok).toBe(false);
+    }
+    expect(parseCustomerEmail(`${"a".repeat(250)}@x.co`).ok).toBe(false);
   });
 });

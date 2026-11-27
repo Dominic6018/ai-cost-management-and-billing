@@ -7,7 +7,11 @@ import { afterAll, describe, expect, it } from "vitest";
 import { parseEnv } from "@/lib/env";
 import type { StripeClient } from "@/lib/stripe";
 import { COMMAND_LINE, type AuditActor } from "./audit";
-import { addAdjustment, createBillingCustomer } from "./billing";
+import {
+  addAdjustment,
+  createBillingCustomer,
+  setBillingCustomerEmail,
+} from "./billing";
 import { createBillingPlan } from "./billing-plans";
 import { customersWithOpenEntries, invoiceOpenEntries } from "./billing-stripe";
 import {
@@ -42,10 +46,14 @@ afterAll(async () => {
 
 /**
  * Stripe, in memory: like the real API, a repeated idempotency key
- * returns the object it first created. `failOn` makes one call throw once.
+ * returns the object it first created, `POST /customers/<id>` updates a
+ * customer, and an invoice sent by email needs a customer with an email.
+ * `failOn` makes one call throw once.
  */
 function fakeStripe(mode: "test" | "live" = "test") {
   const byKey = new Map<string, { id: string }>();
+  /** Each Stripe customer's email, as Stripe has it. */
+  const emails = new Map<string, string>();
   const calls: Array<{
     path: string;
     params: Record<string, unknown>;
@@ -75,19 +83,39 @@ function fakeStripe(mode: "test" | "live" = "test") {
       }
       const known = byKey.get(key);
       if (known) return known as T;
+      const update = /^\/customers\/(.+)$/.exec(path);
+      if (update) {
+        if (typeof params.email === "string")
+          emails.set(update[1], params.email);
+        return { id: update[1] } as T;
+      }
+      if (
+        path === "/invoices" &&
+        params.collection_method === "send_invoice" &&
+        !emails.get(String(params.customer))
+      ) {
+        throw new Error(
+          "Stripe refused /invoices: The customer needs a valid email when `collection_method=send_invoice`.",
+        );
+      }
       const prefix =
         { "/customers": "cus", "/invoices": "in", "/invoiceitems": "ii" }[
           path
         ] ?? "obj";
       const created = { id: `${prefix}_${randomUUID().slice(0, 8)}` };
       byKey.set(key, created);
+      if (path === "/customers" && typeof params.email === "string") {
+        emails.set(created.id, params.email);
+      }
       return created as T;
     },
   };
   return stripe;
 }
 
-async function setup() {
+async function setup({
+  email = "billing@acme.example.com",
+}: { email?: string | null } = {}) {
   const [organization] = await db
     .insert(organizations)
     .values({ name: "Stripe test", slug: `it-${randomUUID()}` })
@@ -102,6 +130,7 @@ async function setup() {
     ...scope,
     externalId: "cus_42",
     name: "Acme",
+    email,
   });
   if (!created.ok) throw new Error("customer not created");
   const customer = created.customer;
@@ -329,5 +358,79 @@ describe("invoicing the ledger in Stripe", () => {
         .delete(billingStripeInvoiceItems)
         .where(eq(billingStripeInvoiceItems.invoiceId, result.invoice.id)),
     ).rejects.toThrow();
+  });
+});
+
+describe("the customer's email, which Stripe sends invoices to", () => {
+  it("skips a customer without one, before anything reaches Stripe", async () => {
+    const t = await setup({ email: null });
+    const stripe = fakeStripe();
+    await t.entry(10_000_000n);
+    expect(await invoiceOpenEntries(db, t.actor, stripe, t.customer)).toEqual({
+      ok: false,
+      error: "no_email",
+    });
+    expect(stripe.calls).toEqual([]);
+    expect(await invoices(t.customer.id)).toEqual([]);
+  });
+
+  it("creates the Stripe customer with it", async () => {
+    const t = await setup();
+    const stripe = fakeStripe();
+    await t.entry(10_000_000n);
+    expect(
+      await invoiceOpenEntries(db, t.actor, stripe, t.customer),
+    ).toMatchObject({ ok: true });
+    expect(stripe.calls[0]).toMatchObject({
+      path: "/customers",
+      params: { email: "billing@acme.example.com" },
+    });
+  });
+
+  it("gives an existing Stripe customer a new email once", async () => {
+    // A Stripe customer saved before emails were sent, as early runs did.
+    const t = await setup({ email: null });
+    const stripe = fakeStripe();
+    await db.insert(billingStripeCustomers).values({
+      customerId: t.customer.id,
+      mode: "test",
+      stripeCustomerId: "cus_without_email",
+    });
+    await t.entry(10_000_000n);
+    const withEmail = await setBillingCustomerEmail(
+      db,
+      t.actor,
+      t.customer,
+      "ap@acme.example.com",
+    );
+
+    expect(
+      await invoiceOpenEntries(db, t.actor, stripe, withEmail),
+    ).toMatchObject({ ok: true });
+    expect(
+      stripe.calls
+        .slice(0, 2)
+        .map((c) => [c.path, c.params.email ?? c.params.customer]),
+    ).toEqual([
+      ["/customers/cus_without_email", "ap@acme.example.com"],
+      ["/invoices", "cus_without_email"],
+    ]);
+    // Stripe has it now, so the next invoice doesn't send it again.
+    await t.entry(5_000_000n);
+    const before = stripe.calls.length;
+    expect(
+      await invoiceOpenEntries(db, t.actor, stripe, withEmail),
+    ).toMatchObject({ ok: true });
+    expect(stripe.calls.slice(before).map((c) => c.path)).not.toContain(
+      "/customers/cus_without_email",
+    );
+    const audited = await db
+      .select({ action: auditLog.action, details: auditLog.details })
+      .from(auditLog)
+      .where(eq(auditLog.organizationId, t.organization.id));
+    expect(audited).toContainEqual({
+      action: "billing.customer_email_set",
+      details: { email: "ap@acme.example.com", previous: null },
+    });
   });
 });

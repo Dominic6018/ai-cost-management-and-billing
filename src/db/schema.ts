@@ -622,6 +622,7 @@ export const AUDIT_ACTIONS = [
   "account.invitation_revoked",
   "billing.portal_link_created",
   "billing.portal_link_revoked",
+  "billing.customer_email_set",
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
@@ -659,7 +660,7 @@ export const auditLog = pgTable(
     ),
     check(
       "audit_log_action_valid",
-      sql`${t.action} in ('project.created', 'project.updated', 'price.added', 'price.ended', 'account.created', 'account.role_changed', 'account.password_reset', 'account.sessions_revoked', 'api_key.created', 'api_key.revoked', 'organization.created', 'account.organization_changed', 'usage.repriced', 'billing.customer_created', 'billing.adjusted', 'billing.reversed', 'billing.plan_created', 'billing.subscribed', 'billing.unsubscribed', 'billing.charged', 'billing.credit_granted', 'billing.credits_applied', 'billing.credit_refunded', 'billing.stripe_invoiced', 'billing.stripe_paid', 'account.invited', 'account.invitation_revoked', 'billing.portal_link_created', 'billing.portal_link_revoked')`,
+      sql`${t.action} in ('project.created', 'project.updated', 'price.added', 'price.ended', 'account.created', 'account.role_changed', 'account.password_reset', 'account.sessions_revoked', 'api_key.created', 'api_key.revoked', 'organization.created', 'account.organization_changed', 'usage.repriced', 'billing.customer_created', 'billing.adjusted', 'billing.reversed', 'billing.plan_created', 'billing.subscribed', 'billing.unsubscribed', 'billing.charged', 'billing.credit_granted', 'billing.credits_applied', 'billing.credit_refunded', 'billing.stripe_invoiced', 'billing.stripe_paid', 'account.invited', 'account.invitation_revoked', 'billing.portal_link_created', 'billing.portal_link_revoked', 'billing.customer_email_set')`,
     ),
   ],
 );
@@ -864,6 +865,9 @@ export const billingCustomers = pgTable(
     // The customerId in usage events and outcomes.
     externalId: text("external_id").notNull(),
     name: text("name").notNull(),
+    // Where their invoices are sent. Optional, but Stripe needs it to
+    // create an invoice that's sent to the customer.
+    email: text("email"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -1211,6 +1215,8 @@ export const billingStripeCustomers = pgTable(
       .references(() => billingCustomers.id, { onDelete: "cascade" }),
     mode: text("mode").$type<StripeMode>().notNull(),
     stripeCustomerId: text("stripe_customer_id").notNull(),
+    // The email Stripe last had for them, so a change is sent once.
+    email: text("email"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

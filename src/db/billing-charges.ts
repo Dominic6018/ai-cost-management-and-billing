@@ -230,6 +230,7 @@ export function customersOnPlans(
       organizationId: billingCustomers.organizationId,
       externalId: billingCustomers.externalId,
       name: billingCustomers.name,
+      email: billingCustomers.email,
       createdAt: billingCustomers.createdAt,
     })
     .from(billingCustomers)

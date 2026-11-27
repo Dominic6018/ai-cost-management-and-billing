@@ -704,6 +704,11 @@ jobs:
           grep -q "^$C  CI customer  balance -\$2.500000$" ledger.log
           test "$(grep -c "reversal\|adjustment" ledger.log)" = 3
           npm run --silent billing -- customers | grep -qF "$C  CI customer  balance -\$2.500000  3 entries"
+          # Where a customer's invoices go: a valid email, kept and audited
+          if npm run --silent billing -- customer-email --customer "$C" --email not-an-email; then exit 1; fi
+          npm run --silent billing -- customer-email --customer "$C" --email ap@ci.example.com | grep -qF "now go to ap@ci.example.com"
+          npm run --silent billing -- customers | grep -F "$C  CI customer" | grep -qF "email ap@ci.example.com"
+          test "$(psql "$DATABASE_URL" -tAc "SELECT count(*) FROM audit_log WHERE action = 'billing.customer_email_set' AND target = '$C'")" = 1
           # The database refuses to change the ledger
           if psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "UPDATE billing_ledger_entries SET amount_usd = 1 WHERE id = '$ENTRY'"; then exit 1; fi
           if psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DELETE FROM billing_ledger_entries WHERE id = '$ENTRY'"; then exit 1; fi

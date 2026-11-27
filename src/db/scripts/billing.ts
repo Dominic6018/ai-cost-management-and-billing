@@ -8,6 +8,7 @@ import {
   monthStart,
   parseBillingMonth,
   parseCreditExpiry,
+  parseCustomerEmail,
   parseCustomerExternalId,
   parseCustomerName,
   parseEntryAmount,
@@ -37,6 +38,7 @@ import {
   listBillingCustomers,
   listLedgerEntries,
   reverseLedgerEntry,
+  setBillingCustomerEmail,
 } from "../billing";
 import {
   changePlan,
@@ -65,7 +67,8 @@ import { createStripeClient, parseStripeConfig } from "@/lib/stripe";
 import { formatShare, revenueReport } from "@/lib/revenue";
 
 const USAGE = `Usage:
-  npm run billing -- customer-add --customer <id> --name <name>
+  npm run billing -- customer-add --customer <id> --name <name> [--email <email>]
+  npm run billing -- customer-email --customer <id> --email <email>
   npm run billing -- customers
   npm run billing -- adjust --customer <id> --amount <usd> --reason <text> [--key <key>]
   npm run billing -- reverse --entry <entry id> --reason <text>
@@ -119,7 +122,8 @@ month), AI API cost and revenue minus AI API cost, which isn't profit;
 
 stripe-invoice creates a draft Stripe invoice for each customer's ledger
 entries not yet invoiced (or one --customer), for you to review and send
-in Stripe. It needs STRIPE_SECRET_KEY, a test key unless
+in Stripe. Stripe sends invoices by email, so a customer needs an email
+first (customer-add --email, or customer-email); one without is skipped. It needs STRIPE_SECRET_KEY, a test key unless
 STRIPE_ALLOW_LIVE=true. stripe-invoices lists a customer's invoices with
 their latest status from Stripe's webhooks.
 
@@ -154,6 +158,7 @@ async function main() {
       org: { type: "string", default: "default" },
       customer: { type: "string" },
       name: { type: "string" },
+      email: { type: "string" },
       amount: { type: "string" },
       reason: { type: "string" },
       key: { type: "string" },
@@ -174,6 +179,7 @@ async function main() {
   const [command] = positionals;
   const required: Record<string, Array<keyof typeof values>> = {
     "customer-add": ["customer", "name"],
+    "customer-email": ["customer", "email"],
     customers: [],
     adjust: ["customer", "amount", "reason"],
     reverse: ["entry", "reason"],
@@ -213,6 +219,10 @@ async function main() {
             ? parsePlanName(values.name)
             : parseCustomerName(values.name),
         )
+      : undefined;
+  const email =
+    values.email !== undefined
+      ? valid(parseCustomerEmail(values.email))
       : undefined;
   const planSlug =
     values.plan !== undefined ? valid(parsePlanSlug(values.plan)) : undefined;
@@ -305,19 +315,26 @@ async function main() {
         ...scope,
         externalId: customerId!,
         name: name!,
+        email: email ?? null,
       });
       if (!result.ok) {
         throw new Error(
           `Customer "${customerId}" is already in ${organization.slug}.`,
         );
       }
-      console.log(`Added billing customer ${customerId} (${name}).`);
+      console.log(
+        `Added billing customer ${customerId} (${name})${email ? `, invoices to ${email}` : ""}.`,
+      );
+    } else if (command === "customer-email") {
+      const found = await customer();
+      await setBillingCustomerEmail(db, actor, found, email!);
+      console.log(`${found.externalId}'s invoices now go to ${email}.`);
     } else if (command === "customers") {
       const plans = await plansByCustomer(db, scope, thisMonth);
       for (const row of await listBillingCustomers(db, scope)) {
         const current = plans.get(row.customer.id);
         console.log(
-          `${row.customer.externalId}  ${row.customer.name}  balance ${formatEntryUsd(row.balanceMicros)}  ${row.entries} entr${row.entries === 1 ? "y" : "ies"}  plan ${current?.slug ?? "none"}`,
+          `${row.customer.externalId}  ${row.customer.name}  balance ${formatEntryUsd(row.balanceMicros)}  ${row.entries} entr${row.entries === 1 ? "y" : "ies"}  plan ${current?.slug ?? "none"}  email ${row.customer.email ?? "none"}`,
         );
       }
     } else if (command === "plan-add") {
@@ -496,6 +513,10 @@ async function main() {
         if (result.ok) {
           console.log(
             `${target.externalId}  draft invoice ${result.invoice.stripeInvoiceId} for ${cents(result.invoice.amountCents)} (${result.entries} entr${result.entries === 1 ? "y" : "ies"}, ${client.mode} mode)`,
+          );
+        } else if (result.error === "no_email") {
+          console.log(
+            `${target.externalId}  not invoiced: Stripe sends invoices by email, so add one first: npm run billing -- customer-email --customer ${target.externalId} --email <email>`,
           );
         } else if (result.error === "nothing_owed") {
           console.log(
