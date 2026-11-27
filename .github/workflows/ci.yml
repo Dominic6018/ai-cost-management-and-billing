@@ -18,6 +18,8 @@ jobs:
     env:
       # Placeholder so env validation passes during build; no database is contacted.
       DATABASE_URL: postgres://ci:ci@localhost:5432/ci
+      # A made-up code, to check pages carry Google's verification tag.
+      GOOGLE_SITE_VERIFICATION: ci-site-verification-0123456789
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,6 +48,7 @@ jobs:
           grep -qF '<title>MeterVanta — AI Cost Intelligence &amp; Usage-Based Billing Platform</title>' home.html
           grep -qF 'Control AI costs. Monetize usage. Protect your margins.' home.html
           grep -qF '<meta property="og:title" content="MeterVanta — AI Cost Intelligence &amp; Usage-Based Billing Platform"/>' home.html
+          grep -qF '<meta name="google-site-verification" content="ci-site-verification-0123456789"/>' home.html
           curl -s http://localhost:3000/login | grep -qF '<title>Sign in · MeterVanta</title>'
           STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:3000/api/usage)
           echo "/api/usage without a key -> $STATUS"; test "$STATUS" = 401

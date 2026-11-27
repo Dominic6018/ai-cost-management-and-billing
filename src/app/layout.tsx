@@ -5,6 +5,7 @@ import {
   PRODUCT_NAME,
   PRODUCT_TITLE,
 } from "@/lib/product";
+import { parseSiteVerification } from "@/lib/site-verification";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +17,11 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Read when the pages are built, so set it before deploying.
+const googleSiteVerification = parseSiteVerification(
+  process.env.GOOGLE_SITE_VERIFICATION,
+);
 
 export const metadata: Metadata = {
   // Pages set their own title ("Prices"); the brand follows it in the tab.
@@ -35,6 +41,10 @@ export const metadata: Metadata = {
     title: PRODUCT_TITLE,
     description: PRODUCT_DESCRIPTION,
   },
+  // Google Search Console's ownership check, when it's set up.
+  ...(googleSiteVerification && {
+    verification: { google: googleSiteVerification },
+  }),
 };
 
 export default function RootLayout({
