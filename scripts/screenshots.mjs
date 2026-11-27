@@ -103,17 +103,15 @@ try {
 
   let nextId = 0;
   const pending = new Map();
-  const listeners = new Set();
+  // Replies to commands; events aren't needed, since pages are awaited
+  // by checking what the tab shows.
   ws.onmessage = ({ data }) => {
     const message = JSON.parse(data);
-    if (message.id) {
-      const { resolve, reject } = pending.get(message.id);
-      pending.delete(message.id);
-      if (message.error) reject(new Error(message.error.message));
-      else resolve(message.result);
-    } else {
-      for (const listener of listeners) listener(message);
-    }
+    if (!message.id) return;
+    const { resolve, reject } = pending.get(message.id);
+    pending.delete(message.id);
+    if (message.error) reject(new Error(message.error.message));
+    else resolve(message.result);
   };
   const send = (method, params = {}, sessionId) => {
     const id = ++nextId;
@@ -131,16 +129,6 @@ try {
     flatten: true,
   });
   const page = (method, params) => send(method, params, sessionId);
-  const nextEvent = (method) =>
-    new Promise((resolve) => {
-      const listener = (message) => {
-        if (message.method === method && message.sessionId === sessionId) {
-          listeners.delete(listener);
-          resolve(message.params);
-        }
-      };
-      listeners.add(listener);
-    });
 
   async function evaluate(expression) {
     const { result, exceptionDetails } = await page("Runtime.evaluate", {
@@ -160,10 +148,23 @@ try {
     throw new Error(`Timed out waiting for ${what}`);
   }
 
+  /** Whether the tab shows `pathname` (a path, no query) fully loaded. */
+  const settledOn = (pathname) =>
+    `location.pathname === ${JSON.stringify(pathname)} && document.readyState === "complete"`;
+
+  // A load event can be a late one from the page before, such as the
+  // redirect after signing in, so wait until the tab is on the page asked
+  // for and has finished loading it.
   async function open(pathname) {
-    const loaded = nextEvent("Page.loadEventFired");
+    const target = new URL(base + pathname).pathname;
+    // Mark the page being left, so even reopening the same path waits
+    // for a new document rather than finding the old one finished.
+    await evaluate(`window.__leaving = true`);
     await page("Page.navigate", { url: base + pathname });
-    await loaded;
+    await waitFor(
+      `!window.__leaving && ${settledOn(target)}`,
+      `${target} to load`,
+    );
   }
 
   await page("Page.enable");
@@ -180,13 +181,17 @@ try {
     form.password.value = ${JSON.stringify(password)};
     form.requestSubmit();
   })()`);
-  await waitFor(`location.pathname === "/overview"`, "sign-in");
+  await waitFor(settledOn("/overview"), "sign-in");
 
   // Paths name projects as {Name}; the pages take generated IDs, so read
   // them from the project selector.
   let projectIds = {};
   if (PAGES.some(([, pathname]) => pathname.includes("{"))) {
     await open("/breakdown");
+    await waitFor(
+      `document.querySelectorAll("#project option[value]:not([value=''])").length > 0`,
+      "the project selector",
+    );
     projectIds = await evaluate(`Object.fromEntries(
       [...document.querySelectorAll("#project option")]
         .filter((option) => option.value)
